@@ -1570,15 +1570,17 @@ body::before { background: repeating-linear-gradient(0deg, transparent, transpar
 
 <!-- Toast -->
 <div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ════════════════════════════════════════════════════════════════
-   NEXUS QA — ESTADO CENTRAL + PERSISTÊNCIA
-   Tudo fica em DB e é salvo no localStorage a cada mudança.
-   Isso simula o "banco de dados robusto" do briefing enquanto
-   o backend real (Supabase/Firebase) não está conectado.
+   NEXUS QA — ESTADO CENTRAL + PERSISTÊNCIA (Supabase)
+   Tudo fica em DB (em memória) e é sincronizado com o Supabase
+   a cada commit(). DB.user é sessão local e não é sincronizado.
 ════════════════════════════════════════════════════════════════ */
 
-const STORAGE_KEY = 'nexus_qa_db_v1';
+const SUPABASE_URL = 'https://ytatwhupqkqwiudkqpmf.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Ca2e1tlXDh5Argh_17dWJg_G-cPALcq';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function uid(prefix){ return prefix+'_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
 
@@ -1672,37 +1674,159 @@ function seedDB(){
   };
 }
 
-function loadDB(){
+/* ───── Mapeamento JS (camelCase) ↔ Supabase (snake_case) ───── */
+const TABLES = {
+  carteiras: {
+    toRow:   c => ({ id:c.id, nome:c.nome, setor:c.setor, descricao:c.descricao||null }),
+    fromRow: r => ({ id:r.id, nome:r.nome, setor:r.setor, descricao:r.descricao||'' }),
+  },
+  requisitos: {
+    toRow:   r => ({ id:r.id, nome:r.nome, carteira_id:r.carteiraId, peso:r.peso, ngc:!!r.ngc }),
+    fromRow: r => ({ id:r.id, nome:r.nome, carteiraId:r.carteira_id, peso:r.peso, ngc:!!r.ngc }),
+  },
+  monitores: {
+    toRow:   m => ({ id:m.id, nome:m.nome, login:m.login, senha:m.senha, setores:m.setores, status:m.status }),
+    fromRow: r => ({ id:r.id, nome:r.nome, login:r.login, senha:r.senha, setores:r.setores||[], status:r.status }),
+  },
+  operadores: {
+    toRow:   o => ({ id:o.id, nome:o.nome, matricula:o.matricula, setor:o.setor, carteira_id:o.carteiraId, monitor_id:o.monitorId, admissao:o.admissao || null }),
+    fromRow: r => ({ id:r.id, nome:r.nome, matricula:r.matricula, setor:r.setor, carteiraId:r.carteira_id, monitorId:r.monitor_id, admissao:r.admissao }),
+  },
+  avaliacoes: {
+    toRow:   a => ({ id:a.id, data:a.data, timestamp:a.timestamp, telefone:a.telefone, setor:a.setor, carteira_id:a.carteiraId, operador_id:a.operadorId, monitor_id:a.monitorId, nota:a.nota, ngc:a.ngc, pontos_criticos:a.pontosCriticos, pontos_positivos:a.pontosPositivos }),
+    fromRow: r => ({ id:r.id, data:r.data, timestamp:r.timestamp, telefone:r.telefone, setor:r.setor, carteiraId:r.carteira_id, operadorId:r.operador_id, monitorId:r.monitor_id, nota:Number(r.nota), ngc:r.ngc, pontosCriticos:r.pontos_criticos||'', pontosPositivos:r.pontos_positivos||'' }),
+  },
+  feedbacks: {
+    toRow:   f => ({ id:f.id, operador_id:f.operadorId, pontos_melhoria:f.pontosMelhoria, plano_acao:f.planoAcao, feedback_formal:f.feedbackFormal, autor:f.autor, timestamp:f.timestamp }),
+    fromRow: r => ({ id:r.id, operadorId:r.operador_id, pontosMelhoria:r.pontos_melhoria, planoAcao:r.plano_acao, feedbackFormal:r.feedback_formal, autor:r.autor, timestamp:r.timestamp }),
+  },
+};
+
+/* setores é só uma lista de nomes — a tabela usa id serial próprio, então sincroniza por nome */
+async function syncSetores(nomes){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      if(parsed && parsed.operadores && parsed.operadores.length){
-        return parsed;
-      }
-    }
-  }catch(e){ console.warn('Falha ao carregar DB salvo, recriando seed.', e); }
-  const fresh = seedDB();
-  persistDB(fresh);
-  return fresh;
+    const { data: existing } = await supabase.from('setores').select('nome');
+    const existentes = (existing||[]).map(r=>r.nome);
+    const novos = nomes.filter(n=>!existentes.includes(n));
+    const remover = existentes.filter(n=>!nomes.includes(n));
+    if(novos.length) await supabase.from('setores').insert(novos.map(nome=>({nome})));
+    if(remover.length) await supabase.from('setores').delete().in('nome', remover);
+  }catch(e){ console.error('Erro ao sincronizar setores', e); throw e; }
 }
 
-function persistDB(db){
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-  }catch(e){
-    console.error('Falha ao salvar no localStorage', e);
-    toast('⚠ Falha ao persistir dados localmente');
+/* upsert do estado atual de uma tabela no Supabase */
+async function upsertTable(table, localArray){
+  const { toRow } = TABLES[table];
+  const rows = localArray.map(toRow);
+  if(!rows.length) return;
+  const { error } = await supabase.from(table).upsert(rows);
+  if(error){ console.error(`Erro ao salvar ${table}`, error); throw error; }
+}
+
+/* remove no Supabase os registros que não existem mais localmente */
+async function deleteRemoved(table, localArray){
+  const localIds = localArray.map(x=>x.id);
+  const { data: existing, error } = await supabase.from(table).select('id');
+  if(error){ console.error(`Erro ao ler ${table} para limpeza`, error); throw error; }
+  const remover = (existing||[]).map(r=>r.id).filter(id=>!localIds.includes(id));
+  if(remover.length){
+    const { error: delErr } = await supabase.from(table).delete().in('id', remover);
+    if(delErr){ console.error(`Erro ao remover registros de ${table}`, delErr); throw delErr; }
   }
 }
 
-let DB = loadDB();
+async function fetchTable(table){
+  const { fromRow } = TABLES[table];
+  const { data, error } = await supabase.from(table).select('*');
+  if(error){ console.error(`Erro ao ler ${table}`, error); return []; }
+  return (data||[]).map(fromRow);
+}
 
-// Salva e dispara atualização "em tempo real" das telas dependentes
+let DB = null;
+
+async function initDB(){
+  try{
+    const [setoresRes, carteiras, requisitos, monitores, operadores, avaliacoes, feedbacks] = await Promise.all([
+      supabase.from('setores').select('*'),
+      fetchTable('carteiras'),
+      fetchTable('requisitos'),
+      fetchTable('monitores'),
+      fetchTable('operadores'),
+      fetchTable('avaliacoes'),
+      fetchTable('feedbacks'),
+    ]);
+
+    if(operadores.length === 0){
+      // banco vazio (primeira conexão) — semeia dados de exemplo e envia ao Supabase
+      DB = seedDB();
+      await persistDB(DB);
+      return;
+    }
+
+    DB = {
+      user: null,
+      setores: (setoresRes.data||[]).map(r=>r.nome),
+      carteiras, requisitos, monitores, operadores, avaliacoes, feedbacks,
+    };
+  }catch(e){
+    console.error('Falha ao conectar ao Supabase, usando dados de exemplo locais.', e);
+    DB = seedDB();
+    toast('⚠ Sem conexão com o banco — usando dados temporários');
+  }
+}
+
+const dbReady = initDB();
+
+async function persistDB(db){
+  // setores não tem relação de FK com nada
+  await syncSetores(db.setores);
+
+  // 1) upsert pai → filho: garante que toda FK referenciada já exista antes do filho ser salvo
+  await upsertTable('carteiras', db.carteiras);
+  await upsertTable('requisitos', db.requisitos);
+  await upsertTable('monitores', db.monitores);
+  await upsertTable('operadores', db.operadores);
+  await upsertTable('avaliacoes', db.avaliacoes);
+  await upsertTable('feedbacks', db.feedbacks);
+
+  // 2) remove filho → pai: evita violar FK ao excluir um registro "pai" ainda referenciado
+  await deleteRemoved('feedbacks', db.feedbacks);
+  await deleteRemoved('avaliacoes', db.avaliacoes);
+  await deleteRemoved('operadores', db.operadores);
+  await deleteRemoved('monitores', db.monitores);
+  await deleteRemoved('requisitos', db.requisitos);
+  await deleteRemoved('carteiras', db.carteiras);
+}
+
+// Atualiza a tela imediatamente (otimista) e sincroniza com o Supabase em segundo plano
 function commit(){
-  persistDB(DB);
   flashSync();
   renderAll();
+  persistDB(DB).then(()=>{
+    flashSynced();
+  }).catch(e=>{
+    console.error('Falha ao sincronizar com o Supabase', e);
+    toast('⚠ Falha ao salvar no banco — verifique sua conexão');
+    flashSyncError();
+  });
+}
+
+function flashSynced(){
+  const dot = document.querySelector('.topbar-sync-dot');
+  const label = document.getElementById('sync-label');
+  if(!dot) return;
+  label.textContent = 'SINCRONIZADO';
+  dot.style.background = '#00c850';
+  dot.style.boxShadow = '0 0 6px #00c850';
+}
+
+function flashSyncError(){
+  const dot = document.querySelector('.topbar-sync-dot');
+  const label = document.getElementById('sync-label');
+  if(!dot) return;
+  label.textContent = 'FALHA AO SINCRONIZAR';
+  dot.style.background = '#ff9900';
+  dot.style.boxShadow = '0 0 6px #ff9900';
 }
 
 function flashSync(){
@@ -1712,11 +1836,6 @@ function flashSync(){
   label.textContent = 'SINCRONIZANDO...';
   dot.style.background = 'var(--neon)';
   dot.style.boxShadow = '0 0 6px var(--neon)';
-  setTimeout(()=>{
-    label.textContent = 'SINCRONIZADO';
-    dot.style.background = '#00c850';
-    dot.style.boxShadow = '0 0 6px #00c850';
-  }, 420);
 }
 /* ════════════════════════════════════════════════════════════════
    HELPERS DE DADOS
@@ -1953,13 +2072,19 @@ setInterval(updateClock,1000); updateClock();
 /* ════════════════════════════════════════════════════════════════
    LOGIN / LOGOUT
 ════════════════════════════════════════════════════════════════ */
-function doLogin(){
+async function doLogin(){
   const user = document.getElementById('login-user').value.trim();
   const pass = document.getElementById('login-pass').value;
   const errEl = document.getElementById('login-error');
   errEl.textContent = '';
 
   if(!user || !pass){ errEl.textContent = '▸ Preencha login e senha'; return; }
+
+  const btn = document.querySelector('.btn-login');
+  const originalLabel = btn ? btn.textContent : '';
+  if(btn){ btn.textContent = 'CONECTANDO...'; btn.disabled = true; }
+  await dbReady;
+  if(btn){ btn.textContent = originalLabel; btn.disabled = false; }
 
   let sessionUser = null;
 
@@ -2670,6 +2795,9 @@ function deleteMonitor(id){
   const m = getMonitor(id);
   confirmAction(`Excluir o monitor "${m.nome}"? Avaliações já registradas serão mantidas no histórico.`, ()=>{
     DB.monitores = DB.monitores.filter(x=>x.id!==id);
+    // mantém operadores/avaliações no histórico, só desvincula do monitor removido
+    DB.operadores.forEach(o=>{ if(o.monitorId===id) o.monitorId = null; });
+    DB.avaliacoes.forEach(a=>{ if(a.monitorId===id) a.monitorId = null; });
     commit();
     toast('Monitor excluído');
   });
