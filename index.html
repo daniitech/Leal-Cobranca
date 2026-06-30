@@ -3,3497 +3,1002 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS QA — Monitoria de Qualidade</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<title>Checklist de Avaliação — Operadores Mercado Pago</title>
 <style>
-:root {
-  --black:    #050505;
-  --dark:     #0a0a0a;
-  --surface:  #0f0f0f;
-  --surface2: #141414;
-  --border:   #1a1a1a;
-  --border2:  #222;
-  --red-wine: #420a16;
-  --red:      #c41230;
-  --red-dim:  #8a0f1f;
-  --neon:     #ff1f44;
-  --red-soft: #ff4d63;
-  --neon-low: rgba(196,18,48,0.08);
-  --neon-mid: rgba(196,18,48,0.18);
-  --neon-glow: 0 0 8px rgba(255,31,68,0.55), 0 0 24px rgba(255,31,68,0.22);
-  --neon-glow-soft: 0 0 4px rgba(255,31,68,0.28);
-  --text:     #e0e0e0;
-  --text-dim: #666;
-  --text-mid: #999;
-  --font-display: 'Sora', sans-serif;
-  --font-mono:    'Inter', sans-serif;
-  --font-body:    'Inter', sans-serif;
-}
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {
-  background: var(--black);
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 14px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+  :root {
+    --yellow: #FFE600;
+    --yellow-light: #FFF59D;
+    --black: #1A1A1A;
+    --gray-dark: #2C2C2C;
+    --gray-mid: #444;
+    --gray-light: #F5F5F5;
+    --white: #FFFFFF;
+    --green: #00C853;
+    --red: #FF3D00;
+    --blue: #1565C0;
+  }
 
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-  pointer-events: none; z-index: 9999;
-}
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #111;
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
 
-#particles-canvas {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0;
-  opacity: 0.4;
-}
+  /* SLIDE CONTAINER */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--black); }
-::-webkit-scrollbar-thumb { background: var(--red-dim); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--neon); }
+  /* NAV */
+  .nav {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 16px; z-index: 100;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    padding: 10px 24px; border-radius: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav button {
+    background: var(--yellow); border: none; cursor: pointer;
+    width: 38px; height: 38px; border-radius: 50%;
+    font-size: 18px; font-weight: 700; color: var(--black);
+    transition: transform 0.15s; display: flex; align-items: center; justify-content: center;
+  }
+  .nav button:hover { transform: scale(1.1); }
+  .nav button:disabled { opacity: 0.3; cursor: default; transform: none; }
+  #slide-counter { font-size: 13px; color: rgba(255,255,255,0.7); min-width: 60px; text-align: center; letter-spacing: 1px; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: background 0.2s; }
+  .dot.active { background: var(--yellow); }
 
-#login-screen {
-  position: fixed; inset: 0;
-  background: var(--black);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000;
-  flex-direction: column;
-  gap: 0;
-}
+  /* ── SLIDE 0: CAPA ── */
+  #s0 {
+    background: var(--black);
+    justify-content: center; align-items: center;
+    text-align: center;
+  }
+  .capa-stripe {
+    position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: var(--yellow);
+  }
+  .capa-logo {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--yellow); font-weight: 700; margin-bottom: 32px;
+  }
+  .capa-title {
+    font-size: clamp(36px, 5vw, 64px); font-weight: 900; line-height: 1.05;
+    letter-spacing: -1px;
+  }
+  .capa-title span { color: var(--yellow); }
+  .capa-sub {
+    font-size: 16px; color: rgba(255,255,255,0.5); margin-top: 20px; font-weight: 300;
+  }
+  .capa-total {
+    margin-top: 48px;
+    display: inline-flex; align-items: center; gap: 14px;
+    background: var(--yellow); color: var(--black);
+    padding: 14px 36px; border-radius: 4px;
+    font-weight: 900; font-size: 22px; letter-spacing: -0.5px;
+  }
+  .capa-total small { font-size: 12px; font-weight: 500; opacity: 0.7; display: block; line-height: 1; }
 
-.login-glitch {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 5vw, 48px);
-  font-weight: 700;
-  color: var(--neon);
-  letter-spacing: 0.08em;
-  text-shadow: var(--neon-glow);
-  margin-bottom: 6px;
-  animation: glitch 4s infinite;
-}
+  /* ════════════════════════════════════════
+     SISTEMA UNIFICADO DE CARDS
+     ════════════════════════════════════════ */
+  .card-base {
+    background: var(--gray-dark);
+    border-radius: 10px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    will-change: transform;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-base::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.05), transparent 60%);
+    opacity: 0; transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .card-base:hover::before { opacity: 1; }
+  .card-base:hover { box-shadow: 0 12px 28px rgba(0,0,0,0.4); }
 
-@keyframes glitch {
-  0%,95%,100% { text-shadow: var(--neon-glow); }
-  96% { text-shadow: -2px 0 #0ff, 2px 0 var(--neon); }
-  97% { text-shadow: 2px 0 #0ff, -2px 0 var(--neon); }
-  98% { text-shadow: var(--neon-glow); }
-}
+  /* ── SLIDE 1: VISÃO GERAL ── */
+  #s1 { background: var(--black); padding: 36px 56px 0; }
+  .slide-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .slide-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--yellow); font-weight: 600; margin-bottom: 6px; }
+  .slide-title { font-size: 28px; font-weight: 800; line-height: 1.1; }
+  .total-badge {
+    background: var(--yellow); color: var(--black);
+    padding: 8px 18px; border-radius: 4px; font-size: 14px; font-weight: 800;
+    white-space: nowrap; margin-top: 4px;
+  }
 
-.login-sub {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.1em;
-  margin-bottom: 40px;
-}
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: stretch; }
+  .block {
+    border-top: 3px solid var(--yellow);
+    cursor: default;
+    transform-style: preserve-3d;
+  }
+  .block:hover {
+    border-top-color: var(--yellow);
+  }
+  .block::after {
+    content: attr(data-pct);
+    position: absolute; right: 16px; top: 14px;
+    font-size: 26px; font-weight: 900; color: rgba(255,230,0,0.18); line-height: 1;
+    pointer-events: none; transition: color 0.2s ease; z-index: 0;
+  }
+  .block:hover::after { color: rgba(255,230,0,0.3); }
+  .block-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
+  .block-name { font-size: 15px; font-weight: 700; margin-bottom: 10px; line-height: 1.25; }
+  .block-pct { font-size: 30px; font-weight: 900; color: var(--yellow); line-height: 1; position: relative; z-index: 1; }
+  .block-pct small { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.4); }
+  .block-items { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; position: relative; z-index: 1; flex: 1; }
+  .block-item { font-size: 11.5px; color: rgba(255,255,255,0.55); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; line-height: 1.4; }
+  .block-item span { color: rgba(255,255,255,0.9); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 
-.login-box {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-top: 2px solid var(--red);
-  border-radius: 16px;
-  padding: 36px 40px;
-  width: 360px;
-  box-shadow: 0 0 40px rgba(255,31,68,0.08), inset 0 0 40px rgba(0,0,0,0.4);
-  position: relative;
-}
+  /* ── SLIDES DE CRITÉRIO ── */
+  .criteria-slide { background: #161616; padding: 0; height: 100%; }
+  .cs-slide-inner { display: flex; height: 100%; min-height: 0; }
+  .cs-left {
+    width: 36%; background: var(--yellow); color: var(--black);
+    padding: 44px 40px; display: flex; flex-direction: column; justify-content: center;
+    flex-shrink: 0; height: 100%; overflow-y: auto;
+  }
+  .cs-right {
+    flex: 1; min-height: 0; height: 100%;
+    padding: 28px 44px 20px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 10px;
+  }
 
-.login-box::before {
-  content: 'SYS://AUTH';
-  position: absolute; top: -10px; left: 16px;
-  background: var(--surface);
-  padding: 0 8px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--red);
-  letter-spacing: 0.1em;
-}
+  .cs-section { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; opacity: 0.55; margin-bottom: 8px; }
+  .cs-title { font-size: 26px; font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+  .cs-score-big { font-size: 56px; font-weight: 900; line-height: 1; }
+  .cs-score-label { font-size: 13px; font-weight: 500; opacity: 0.65; margin-top: 4px; }
+  .cs-desc { font-size: 12.5px; line-height: 1.55; opacity: 0.75; margin-top: 18px; }
 
-.login-field { margin-bottom: 16px; }
-.login-field label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
-  margin-bottom: 6px;
-}
-.login-field input {
-  width: 100%;
-  background: var(--dark);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.login-field input:focus {
-  border-color: var(--red);
-  box-shadow: var(--neon-glow-soft);
-}
+  .criterion-card {
+    border-left: 3px solid transparent;
+  }
+  .criterion-card.ok { border-left-color: var(--green); }
+  .criterion-card.warn { border-left-color: var(--red); }
+  .criterion-card.info { border-left-color: var(--yellow); }
+  .cc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cc-name { font-size: 14px; font-weight: 700; }
+  .cc-pts { font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.1); padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .cc-pts.yellow { background: var(--yellow); color: var(--black); }
+  .cc-body { font-size: 12.5px; color: rgba(255,255,255,0.6); line-height: 1.48; }
+  .cc-body strong { color: rgba(255,255,255,0.95); font-weight: 600; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-right: 6px; margin-bottom: 4px; }
+  .tag.ok { background: rgba(0,200,83,0.15); color: #69F0AE; }
+  .tag.err { background: rgba(255,61,0,0.15); color: #FF8A65; }
+  .tag.exc { background: rgba(255,230,0,0.15); color: var(--yellow); }
 
+  /* speech bubble for example dialogue */
+  .quote {
+    display: flex; gap: 8px; align-items: flex-start;
+    background: rgba(255,255,255,0.04); border-radius: 7px;
+    padding: 6px 10px; margin: 4px 0;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .quote:hover { border-color: rgba(255,230,0,0.3); background: rgba(255,255,255,0.06); }
+  .quote .avatar {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; margin-top: 1px;
+  }
+  .quote.op .avatar { background: var(--yellow); color: var(--black); }
+  .quote.cli .avatar { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+  .quote-text { font-size: 11.5px; line-height: 1.45; color: rgba(255,255,255,0.85); font-style: italic; }
+  .quote-text strong { font-style: normal; color: var(--yellow); }
 
-.login-error {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--neon);
-  letter-spacing: 0.05em;
-  margin-bottom: 12px;
-  min-height: 14px;
-}
+  /* cursor glow */
+  #cursor-glow {
+    position: fixed; top: 0; left: 0; width: 380px; height: 380px;
+    border-radius: 50%; pointer-events: none; z-index: 5;
+    background: radial-gradient(circle, rgba(255,230,0,0.06), transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+  }
 
-.btn-login {
-  width: 100%;
-  background: transparent;
-  border: 1px solid var(--red);
-  border-radius: 10px;
-  padding: 12px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--neon);
-  cursor: pointer;
-  box-shadow: var(--neon-glow-soft);
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-.btn-login::before {
-  content: '';
-  position: absolute; top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,31,68,0.1), transparent);
-  transition: left 0.4s;
-}
-.btn-login:hover::before { left: 100%; }
-.btn-login:hover {
-  background: rgba(255,31,68,0.08);
-  box-shadow: var(--neon-glow);
-}
+  /* ── NCG SLIDE ── */
+  #s6 .cs-left { background: #1A1A1A; color: var(--white); border-right: 3px solid var(--yellow); }
+  #s6 .cs-section { color: rgba(255,255,255,0.4); }
+  #s6 .cs-score-big { color: var(--yellow); }
+  #s6 .cs-score-label { color: rgba(255,255,255,0.5); }
+  #s6 .cs-desc { color: rgba(255,255,255,0.55); }
 
-#app {
-  display: none;
-  min-height: 100vh;
-  position: relative; z-index: 1;
-}
+  .ncg-card {
+    border-left: 4px solid var(--red);
+  }
+  .ncg-card.full { border-left-color: #D50000; }
+  .ncg-card.partial { border-left-color: #FF6D00; }
+  .ncg-badge { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px; display: inline-block; }
+  .ncg-badge.full { background: rgba(213,0,0,0.2); color: #FF5252; }
+  .ncg-badge.partial { background: rgba(255,109,0,0.2); color: #FFAB40; }
+  .ncg-name { font-size: 13px; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
+  .ncg-desc { font-size: 11.5px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .ncg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ncg-grid-label { grid-column: 1 / -1; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin: 4px 0 0; }
 
-.topbar {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: 52px;
-  background: rgba(5,5,5,0.95);
-  border-bottom: 1px solid var(--border2);
-  display: flex; align-items: center;
-  padding: 0 20px;
-  gap: 16px;
-  z-index: 100;
-  backdrop-filter: blur(8px);
-}
-.topbar-logo {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--neon);
-  letter-spacing: 0.06em;
-  text-shadow: var(--neon-glow-soft);
-  white-space: nowrap;
-}
-.topbar-logo span { color: var(--text-dim); font-weight: 300; font-size: 12px; margin-left: 6px; letter-spacing: 0.1em; }
-.topbar-sep { flex: 1; }
-.topbar-sync {
-  display: flex; align-items: center; gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-}
-.topbar-sync-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: #00c850;
-  box-shadow: 0 0 6px #00c850;
-}
-.topbar-user {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-}
-.topbar-user-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--neon);
-  box-shadow: 0 0 6px var(--neon);
-  animation: pulse-dot 2s infinite;
-}
-@keyframes pulse-dot {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-.topbar-clock {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--red);
-  letter-spacing: 0.05em;
-}
-.btn-logout {
-  background: transparent;
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 5px 12px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  cursor: pointer;
-  letter-spacing: 0.08em;
-  transition: all 0.2s;
-}
-.btn-logout:hover { border-color: var(--red); color: var(--neon); }
+  /* ── SLIDE FINAL ── */
+  #s7 {
+    background: var(--black);
+    justify-content: center; align-items: center;
+    text-align: center; flex-direction: column;
+    padding: 40px;
+  }
+  .final-stripe { position: absolute; bottom: 0; left: 0; right: 0; height: 8px; background: var(--yellow); }
+  .final-icon { font-size: 48px; margin-bottom: 20px; }
+  .final-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--yellow); font-weight: 700; margin-bottom: 18px; }
+  .final-title { font-size: clamp(26px,3.6vw,46px); font-weight: 900; line-height: 1.15; margin-bottom: 14px; max-width: 760px; }
+  .final-title span { color: var(--yellow); }
+  .final-sub { font-size: 15px; color: rgba(255,255,255,0.5); max-width: 580px; line-height: 1.7; margin-bottom: 34px; }
 
-.sidebar {
-  position: fixed;
-  top: 52px; left: 0; bottom: 0;
-  width: 200px;
-  background: var(--dark);
-  border-right: 1px solid var(--border);
-  padding: 20px 0;
-  z-index: 90;
-  overflow-y: auto;
-}
+  .final-cards {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    max-width: 980px; width: 100%;
+  }
+  .final-card {
+    background: var(--gray-dark); border-radius: 10px;
+    padding: 16px 14px; text-align: left;
+    border-top: 3px solid var(--yellow);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .final-card .fc-pts { font-size: 22px; font-weight: 900; color: var(--yellow); line-height: 1; }
+  .final-card .fc-pts small { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; margin-left: 2px; }
+  .final-card .fc-label { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,0.85); line-height: 1.3; }
+  .final-card.guard { border-top-color: #FF5252; }
+  .final-card.guard .fc-pts { color: #FF5252; font-size: 18px; }
 
-.sidebar-section {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-  padding: 12px 20px 6px;
-}
+  .final-total {
+    margin-top: 28px;
+    display: inline-flex; align-items: baseline; gap: 10px;
+    background: var(--yellow); color: var(--black);
+    padding: 14px 32px; border-radius: 6px;
+    font-weight: 900; font-size: 17px;
+  }
+  .final-total span { font-size: 26px; }
 
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: all 0.15s;
-  border-left: 2px solid transparent;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-dim);
-  position: relative;
-}
-.nav-item:hover {
-  background: var(--neon-low);
-  color: var(--text);
-  border-left-color: var(--red-dim);
-}
-.nav-item.active {
-  background: rgba(196,18,48,0.06);
-  color: var(--neon);
-  border-left-color: var(--neon);
-}
-.nav-item.active::after {
-  content: '';
-  position: absolute; right: 0; top: 20%; bottom: 20%;
-  width: 1px; background: var(--neon);
-  box-shadow: 0 0 6px var(--neon);
-}
-.nav-icon { font-size: 15px; width: 18px; text-align: center; }
-.nav-item[data-hidden="true"] { display: none !important; }
-
-.main-content {
-  margin-left: 200px;
-  margin-top: 52px;
-  padding: 28px 28px;
-  min-height: calc(100vh - 52px);
-}
-
-.page { display: none; }
-.page.active { display: block; }
-
-.page-header {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap; gap: 12px;
-}
-.page-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: 0.05em;
-}
-.page-title-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--red);
-  letter-spacing: 0.06em;
-  display: block;
-  margin-bottom: 2px;
-}
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.kpi-card {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-  cursor: default;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.kpi-card::before {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--red), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.kpi-card:hover { border-color: var(--red-dim); box-shadow: 0 0 20px rgba(196,18,48,0.06); }
-.kpi-card:hover::before { opacity: 1; }
-
-.kpi-card .easter-insight {
-  display: none;
-  position: absolute; bottom: 100%; left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface2);
-  border: 1px solid var(--red);
-  border-radius: 12px;
-  padding: 6px 10px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--neon);
-  white-space: nowrap;
-  box-shadow: var(--neon-glow);
-  z-index: 50;
-}
-.kpi-card:hover .easter-insight { display: block; animation: fadeIn 0.3s 0.8s both; }
-@keyframes fadeIn { from { opacity:0; transform: translateX(-50%) translateY(4px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
-
-.kpi-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-.kpi-value {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.kpi-value.red { color: var(--neon); text-shadow: 0 0 12px rgba(255,31,68,0.5); }
-.kpi-sub {
-  font-size: 11px;
-  color: var(--text-dim);
-}
-
-@keyframes pulse-alert {
-  0%,100% { box-shadow: none; }
-  50% { box-shadow: 0 0 12px rgba(255,31,68,0.35), inset 0 0 8px rgba(255,31,68,0.05); }
-}
-.perf-alert { animation: pulse-alert 2.5s ease-in-out infinite; border-color: rgba(196,18,48,0.4) !important; }
-@keyframes pulse-alert-strong {
-  0%,100% { box-shadow: none; }
-  50% { box-shadow: 0 0 20px rgba(255,31,68,0.55), inset 0 0 12px rgba(255,31,68,0.08); }
-}
-.perf-alert-strong { animation: pulse-alert-strong 1.4s ease-in-out infinite; border-color: var(--neon) !important; }
-@keyframes pulse-ok {
-  0%,100% { box-shadow: none; }
-  50% { box-shadow: 0 0 8px rgba(0,200,80,0.2); }
-}
-.perf-ok { animation: pulse-ok 4s ease-in-out infinite; }
-
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
-  position: relative;
-}
-.panel-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
-  flex-wrap: wrap; gap: 8px;
-}
-.panel-title {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: 0.06em;
-}
-.panel-badge {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--red);
-  border: 1px solid var(--red-dim);
-  border-radius: 10px;
-  padding: 2px 8px;
-  letter-spacing: 0.08em;
-}
-
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-@media(max-width:900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
-
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border2);
-  text-align: left;
-  text-transform: uppercase;
-}
-.data-table td {
-  padding: 11px 12px;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-  color: var(--text-mid);
-  transition: background 0.15s;
-}
-.data-table tr:hover td { background: rgba(255,31,68,0.03); color: var(--text); }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table-empty { text-align:center; padding:24px; color:var(--text-dim); font-family:var(--font-mono); font-size:11px; }
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  font-weight: 500;
-}
-.badge-a { background: rgba(0,200,80,0.12); color: #00c850; border: 1px solid rgba(0,200,80,0.3); }
-.badge-b { background: rgba(255,160,0,0.12); color: #ffa000; border: 1px solid rgba(255,160,0,0.3); }
-.badge-c { background: rgba(196,18,48,0.12); color: var(--neon); border: 1px solid rgba(196,18,48,0.3); }
-.badge-ngc { background: rgba(255,31,68,0.2); color: #ff2e4d; border: 1px solid var(--red); }
-.badge-role { background: rgba(196,18,48,0.08); color: var(--red); border: 1px solid var(--border2); }
-
-.btn {
-  background: transparent;
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 8px 16px;
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: var(--text-mid);
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.btn:hover { border-color: var(--red-dim); color: var(--text); }
-.btn-primary {
-  border-color: var(--red);
-  color: var(--neon);
-  box-shadow: var(--neon-glow-soft);
-}
-.btn-primary:hover { background: rgba(255,31,68,0.08); box-shadow: var(--neon-glow); }
-.btn-sm { padding: 5px 10px; font-size: 11px; }
-.btn-danger { border-color: var(--red); color: var(--neon); }
-.btn:disabled { opacity:0.4; cursor:not-allowed; }
-
-.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 14px; }
-.form-field label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-.form-field input,
-.form-field select,
-.form-field textarea {
-  width: 100%;
-  background: var(--dark);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 9px 12px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.form-field input:focus,
-.form-field select:focus,
-.form-field textarea:focus {
-  border-color: var(--red);
-  box-shadow: 0 0 0 2px rgba(196,18,48,0.1);
-}
-.form-field textarea { resize: vertical; min-height: 80px; }
-.form-field select option { background: var(--surface2); }
-.form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
-.field-error { border-color: var(--neon) !important; box-shadow: 0 0 0 2px rgba(255,31,68,0.15) !important; }
-
-.filters-bar {
-  display: flex; gap: 10px; flex-wrap: wrap;
-  margin-bottom: 20px;
-  padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  align-items: flex-end;
-}
-.filters-bar .form-field { flex: 1; min-width: 130px; }
-.filters-bar .form-field label { font-size: 9px; }
-
-.progress-wrap { background: var(--dark); border-radius: 10px; height: 6px; overflow: hidden; }
-.progress-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.6s ease;
-}
-.progress-fill.green { background: linear-gradient(90deg, #006633, #00c850); box-shadow: 0 0 6px rgba(0,200,80,0.4); }
-.progress-fill.amber { background: linear-gradient(90deg, #7a4a00, #ffa000); }
-.progress-fill.red-bar { background: linear-gradient(90deg, var(--red-dim), var(--neon)); box-shadow: 0 0 6px rgba(255,31,68,0.4); }
-
-.score-circle {
-  width: 52px; height: 52px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  border: 2px solid;
-  flex-shrink: 0;
-}
-.score-a { border-color: #00c850; color: #00c850; background: rgba(0,200,80,0.08); }
-.score-b { border-color: #ffa000; color: #ffa000; background: rgba(255,160,0,0.08); }
-.score-c { border-color: var(--neon); color: var(--neon); background: rgba(255,31,68,0.08); box-shadow: 0 0 10px rgba(255,31,68,0.2); }
-
-.chart-bar-group { display: flex; flex-direction: column; gap: 10px; }
-.chart-bar-item { display: flex; align-items: center; gap: 10px; }
-.chart-bar-label { font-size: 12px; color: var(--text-dim); min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chart-bar-track { flex: 1; background: var(--dark); height: 8px; border-radius: 10px; overflow: hidden; }
-.chart-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--red-dim), var(--neon)); box-shadow: 0 0 8px rgba(255,31,68,0.3); transition: width 0.8s ease; }
-.chart-bar-val { font-family: var(--font-mono); font-size: 11px; color: var(--neon); min-width: 36px; text-align: right; }
-
-.chart-container { position: relative; width: 100%; height: 200px; }
-
-.quadrant-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
-  background: var(--border2);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  overflow: hidden;
-}
-.quadrant-cell {
-  background: var(--surface);
-  padding: 20px;
-  min-height: 200px;
-  transition: background 0.2s;
-}
-.quadrant-cell:hover { background: var(--surface2); }
-.quadrant-label {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  margin-bottom: 4px;
-}
-.quadrant-range {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  margin-bottom: 14px;
-}
-.quadrant-ops { display: flex; flex-wrap: wrap; gap: 6px; }
-.op-chip {
-  background: var(--dark);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 4px 10px;
-  font-size: 11px;
-  color: var(--text-mid);
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex; align-items: center; gap: 6px;
-}
-.op-chip:hover { border-color: var(--red-dim); color: var(--text); }
-
-.op-card {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex; align-items: center; gap: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.op-card::after {
-  content: '';
-  position: absolute; top: 0; left: 0; bottom: 0;
-  width: 3px;
-  background: var(--red);
-}
-.op-card:hover { border-color: var(--red-dim); box-shadow: 0 0 16px rgba(196,18,48,0.05); }
-.op-card-info { flex: 1; min-width: 0; }
-.op-card-name { font-weight: 500; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.op-card-meta { font-size: 11px; color: var(--text-dim); }
-
-.alert-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px;
-  background: rgba(196,18,48,0.05);
-  border: 1px solid rgba(196,18,48,0.2);
-  border-radius: 12px;
-  margin-bottom: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.alert-row:hover { background: rgba(196,18,48,0.09); }
-.alert-row .alert-icon { color: var(--neon); font-size: 16px; }
-.alert-row .alert-name { color: var(--text); font-weight: 500; flex: 1; }
-.alert-row .alert-score { font-family: var(--font-mono); font-size: 12px; color: var(--neon); }
-
-.timeline { display: flex; flex-direction: column; gap: 0; }
-.timeline-item {
-  display: flex; gap: 14px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-.timeline-item:last-child { border-bottom: none; }
-.timeline-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--red-dim); border: 1px solid var(--neon);
-  margin-top: 4px; flex-shrink: 0;
-  box-shadow: 0 0 6px var(--red);
-}
-.timeline-content { flex: 1; }
-.timeline-title { font-size: 13px; color: var(--text); margin-bottom: 2px; }
-.timeline-time { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
-
-.tree-section { margin-bottom: 16px; }
-.tree-sector {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-left: 3px solid var(--red);
-  border-radius: 12px;
-  cursor: pointer;
-  margin-bottom: 4px;
-  font-weight: 500;
-  color: var(--text);
-  transition: background 0.15s;
-}
-.tree-sector:hover { background: rgba(196,18,48,0.06); }
-.tree-sector .tree-arrow { transition: transform 0.2s; display:inline-block; }
-.tree-sector.open .tree-arrow { transform: rotate(90deg); }
-.tree-ops {
-  padding-left: 20px;
-  display: none;
-}
-.tree-ops.open { display: block; }
-
-.modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 200; align-items: center; justify-content: center;
-  backdrop-filter: blur(4px);
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-top: 2px solid var(--red);
-  border-radius: 12px;
-  padding: 28px;
-  width: 560px; max-width: 95vw;
-  max-height: 85vh; overflow-y: auto;
-  box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(196,18,48,0.08);
-  position: relative;
-}
-.modal-title {
-  font-family: var(--font-display);
-  font-size: 16px; font-weight: 600;
-  color: var(--text);
-  margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px;
-}
-.modal-title::before {
-  content: '//';
-  font-family: var(--font-mono);
-  color: var(--red);
-  font-size: 14px;
-}
-.modal-close {
-  position: absolute; top: 16px; right: 16px;
-  background: none; border: none; color: var(--text-dim);
-  font-size: 18px; cursor: pointer;
-  transition: color 0.2s;
-}
-.modal-close:hover { color: var(--neon); }
-
-#toast {
-  position: fixed; bottom: 24px; right: 24px;
-  background: var(--surface);
-  border: 1px solid var(--red);
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--neon);
-  box-shadow: var(--neon-glow);
-  z-index: 999;
-  transform: translateY(80px);
-  opacity: 0;
-  transition: all 0.3s;
-  letter-spacing: 0.06em;
-  max-width: 360px;
-}
-#toast.show { transform: translateY(0); opacity: 1; }
-
-@keyframes decode {
-  0% { opacity: 0.3; letter-spacing: 0.12em; }
-  50% { opacity: 0.8; letter-spacing: 0.07em; }
-  100% { opacity: 1; letter-spacing: 0.05em; }
-}
-.decode-in { animation: decode 0.5s ease forwards; }
-
-.sep { height: 1px; background: var(--border); margin: 20px 0; }
-
-.upload-zone {
-  border: 2px dashed var(--border2);
-  border-radius: 12px;
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 13px;
-  color: var(--text-dim);
-}
-.upload-zone:hover {
-  border-color: var(--red-dim);
-  background: var(--neon-low);
-  color: var(--text);
-}
-.upload-zone.dragover { border-color: var(--neon); background: var(--neon-mid); }
-.upload-zone .upload-icon { font-size: 28px; margin-bottom: 8px; }
-
-.score-input-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.score-input-row:last-child { border-bottom: none; }
-.score-input-label { flex: 1; font-size: 13px; color: var(--text-mid); }
-.score-input-val,
-.score-input {
-  width: 60px;
-  background: var(--dark);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 5px 8px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--neon);
-  text-align: center;
-  outline: none;
-}
-.score-input:focus { border-color: var(--red); }
-.score-ngc { display: flex; align-items: center; gap: 6px; }
-.score-ngc input[type="checkbox"] { accent-color: var(--red); width: 14px; height: 14px; }
-
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-dim);
-}
-.empty-state-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
-.empty-state-text { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; }
-
-.tag-pill {
-  display:inline-flex; align-items:center; gap:4px;
-  background: var(--dark); border:1px solid var(--border2); border-radius:10px;
-  padding:3px 8px; font-size:11px; color:var(--text-mid); margin:2px;
-}
-.tag-pill .x { cursor:pointer; color:var(--text-dim); }
-.tag-pill .x:hover { color:var(--neon); }
-
-/* ════════════════════════════════════════════════════════════════
-   REFINAMENTO VISUAL — menos "robótico", mais leve e fluido
-════════════════════════════════════════════════════════════════ */
-
-/* fundo com leve profundidade em vez de preto chapado */
-html, body {
-  background:
-    radial-gradient(900px circle at 15% 0%, rgba(196,18,48,0.05), transparent 55%),
-    radial-gradient(700px circle at 100% 100%, rgba(196,18,48,0.04), transparent 50%),
-    var(--black);
-}
-/* scanline mais discreta */
-body::before { background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.018) 2px, rgba(0,0,0,0.018) 4px); }
-
-/* brilho suave que segue o cursor, dá profundidade ao fundo */
-#cursor-glow {
-  position: fixed; inset: 0;
-  z-index: 0; pointer-events: none;
-  background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(255,31,68,0.10), rgba(255,31,68,0.035) 35%, transparent 65%);
-  transition: opacity 0.4s ease;
-  opacity: 0;
-}
-#cursor-glow.show { opacity: 1; }
-
-/* easing mais orgânico + leve elevação nas superfícies interativas */
-.kpi-card, .panel, .op-card, .btn, .nav-item, .tree-sector, .alert-row,
-.upload-zone, .login-box, .modal, #toast, .data-table tr td, .score-c,
-.login-field input, input.score-input {
-  transition: border-color 0.35s cubic-bezier(.22,1,.36,1),
-              box-shadow 0.35s cubic-bezier(.22,1,.36,1),
-              transform 0.35s cubic-bezier(.22,1,.36,1),
-              background 0.35s cubic-bezier(.22,1,.36,1),
-              color 0.25s ease;
-}
-
-.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.35), 0 0 24px rgba(196,18,48,0.10); }
-.panel { transition: border-color 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s cubic-bezier(.22,1,.36,1); }
-.panel:hover { border-color: var(--border2); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
-.op-card:hover { transform: translateY(-2px) scale(1.005); box-shadow: 0 10px 24px rgba(0,0,0,0.3), 0 0 18px rgba(196,18,48,0.08); }
-.btn:hover { transform: translateY(-1px); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(196,18,48,0.18), var(--neon-glow); }
-.btn-login:hover { transform: translateY(-1px); }
-.nav-item:hover { transform: translateX(2px); }
-.tree-sector:hover { transform: translateX(2px); }
-.alert-row:hover { transform: translateX(2px); }
-.upload-zone:hover { transform: translateY(-2px); }
-.login-box { box-shadow: 0 30px 80px rgba(0,0,0,0.55), 0 0 40px rgba(255,31,68,0.08), inset 0 0 40px rgba(0,0,0,0.4); }
-.modal { animation: modalPop 0.3s cubic-bezier(.22,1,.36,1); }
-@keyframes modalPop { from { opacity:0; transform: translateY(8px) scale(0.98); } to { opacity:1; transform: translateY(0) scale(1); } }
-.data-table tr td { transition: background 0.25s ease, color 0.25s ease; }
-
-@media (prefers-reduced-motion: reduce) {
-  .kpi-card, .panel, .op-card, .btn, .nav-item, .tree-sector, .alert-row, .upload-zone { transition: none !important; }
-  .kpi-card:hover, .op-card:hover, .btn:hover, .nav-item:hover, .tree-sector:hover, .alert-row:hover, .upload-zone:hover { transform: none !important; }
-}
+  /* scrollbar */
+  .cs-right::-webkit-scrollbar { width: 4px; }
+  .cs-right::-webkit-scrollbar-track { background: transparent; }
+  .cs-right::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<canvas id="particles-canvas"></canvas>
 <div id="cursor-glow"></div>
 
-<!-- ════════════════════════════════════
-     LOGIN SCREEN
-════════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-glitch">NEXUS QA</div>
-  <div class="login-sub">SISTEMA DE MONITORIA DE QUALIDADE // COBRANÇA</div>
-  <div class="login-box">
-    <div class="login-field">
-      <label>IDENTIFICADOR</label>
-      <input type="text" id="login-user" placeholder="usuario" value="admin" />
-    </div>
-    <div class="login-field">
-      <label>SENHA DE ACESSO</label>
-      <input type="password" id="login-pass" placeholder="••••••••" value="1234" />
-    </div>
-    <div class="login-error" id="login-error"></div>
-    <button class="btn-login" onclick="doLogin()">INICIAR SESSÃO ›</button>
-  </div>
-</div>
-<!-- ════════════════════════════════════
-     MAIN APP
-════════════════════════════════════ -->
-<div id="app">
+<div class="deck">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="topbar-logo">NEXUS QA <span>// MONITORIA</span></div>
-    <div class="topbar-sep"></div>
-    <div class="topbar-sync">
-      <span class="topbar-sync-dot"></span>
-      <span id="sync-label">SINCRONIZADO</span>
-    </div>
-    <div class="topbar-clock" id="topbar-clock">00:00:00</div>
-    <div class="topbar-user">
-      <div class="topbar-user-dot"></div>
-      <span id="topbar-username">ADM</span>
-      <span class="badge badge-role" id="topbar-role">ADMINISTRADOR</span>
-    </div>
-    <button class="btn-logout" onclick="doLogout()">◀ SAIR</button>
-  </div>
-
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-section">PRINCIPAL</div>
-    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard',this)">
-      <span class="nav-icon">⬡</span> Dashboard
-    </div>
-    <div class="nav-item" data-page="avaliacao" onclick="navigate('avaliacao',this)">
-      <span class="nav-icon">◈</span> Avaliação
-    </div>
-    <div class="sidebar-section" data-adm-only="true">GESTÃO</div>
-    <div class="nav-item" data-page="cadastro" data-adm-only="true" onclick="navigate('cadastro',this)">
-      <span class="nav-icon">◇</span> Cadastro
-    </div>
-    <div class="nav-item" data-page="operadores" onclick="navigate('operadores',this)">
-      <span class="nav-icon">◉</span> Operadores
-    </div>
-    <div class="nav-item" data-page="monitores" data-adm-only="true" onclick="navigate('monitores',this)">
-      <span class="nav-icon">◎</span> Monitores
-    </div>
-    <div class="sidebar-section" data-adm-only="true">ANÁLISE</div>
-    <div class="nav-item" data-page="quadrantes" data-adm-only="true" onclick="navigate('quadrantes',this)">
-      <span class="nav-icon">⊞</span> Quadrantes
-    </div>
-    <div class="nav-item" data-page="historico" onclick="navigate('historico',this)">
-      <span class="nav-icon">≡</span> Histórico
-    </div>
-    <div class="nav-item" data-page="exportar" data-adm-only="true" onclick="navigate('exportar',this)">
-      <span class="nav-icon">↓</span> Exportar
-    </div>
-  </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="main-content">
-    <!-- ══ DASHBOARD ══ -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 01 — PAINEL GERAL</span>
-          <div class="page-title">Dashboard</div>
-        </div>
-      </div>
-
-      <!-- Filters inline -->
-      <div class="filters-bar">
-        <div class="form-field">
-          <label>Monitor</label>
-          <select id="f-dash-monitor" onchange="refreshDashboard()"><option value="">Todos</option></select>
-        </div>
-        <div class="form-field">
-          <label>Carteira</label>
-          <select id="f-dash-carteira" onchange="refreshDashboard()"><option value="">Todas</option></select>
-        </div>
-        <div class="form-field">
-          <label>Operador</label>
-          <select id="f-dash-operador" onchange="refreshDashboard()"><option value="">Todos</option></select>
-        </div>
-        <div class="form-field">
-          <label>Data início</label>
-          <input type="date" id="f-dash-inicio" onchange="refreshDashboard()" />
-        </div>
-        <div class="form-field">
-          <label>Data fim</label>
-          <input type="date" id="f-dash-fim" onchange="refreshDashboard()" />
-        </div>
-        <div class="form-field" style="flex:0;">
-          <label>&nbsp;</label>
-          <button class="btn btn-sm" onclick="clearDashFilters()">Limpar</button>
-        </div>
-      </div>
-
-      <!-- KPIs -->
-      <div class="kpi-grid" id="kpi-grid">
-        <!-- preenchido via JS -->
-      </div>
-
-      <!-- Charts row -->
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Evolução de Notas</div>
-            <span class="panel-badge">POR CARTEIRA</span>
-          </div>
-          <div class="chart-container">
-            <canvas id="chart-evolucao"></canvas>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Desempenho por Carteira</div>
-            <span class="panel-badge">MÉDIA ATUAL</span>
-          </div>
-          <div class="chart-bar-group" id="chart-carteira-bars" style="padding-top:8px;">
-            <!-- preenchido via JS -->
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <!-- Requisitos críticos -->
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Requisitos Críticos</div>
-            <span class="panel-badge">CONFORMIDADE</span>
-          </div>
-          <div class="chart-bar-group" id="chart-requisitos-bars">
-            <!-- preenchido via JS -->
-          </div>
-        </div>
-
-        <!-- Operadores em alerta -->
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Alertas de Desempenho</div>
-            <span class="panel-badge" style="border-color:var(--neon);color:var(--neon)">AÇÃO NECESSÁRIA</span>
-          </div>
-          <div id="alert-list">
-            <!-- preenchido via JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Volume detalhamento -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Detalhamento Volumétrico</div>
-          <span class="panel-badge">PERÍODO FILTRADO</span>
-        </div>
-        <div class="grid-3">
-          <div>
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.1em;">AVALIAÇÕES POR MONITOR</div>
-            <div class="chart-bar-group" id="vol-monitor-bars"></div>
-          </div>
-          <div>
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.1em;">AVALIAÇÕES POR CARTEIRA</div>
-            <div class="chart-bar-group" id="vol-carteira-bars"></div>
-          </div>
-          <div>
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.1em;">RANKING — TOP 5</div>
-            <table class="data-table" style="font-size:12px;" id="ranking-table">
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- ══ AVALIAÇÃO ══ -->
-    <div class="page" id="page-avaliacao">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 03 — AUDITORIA</span>
-          <div class="page-title">Nova Avaliação</div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Dados da Ligação</div></div>
-          <div class="form-row">
-            <div class="form-field"><label>Data da Ligação</label><input type="date" id="av-data" /></div>
-            <div class="form-field"><label>Telefone Auditado</label><input type="text" id="av-telefone" placeholder="(11) 9xxxx-xxxx" /></div>
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label>Setor</label>
-              <select id="av-setor" onchange="onAvSetorChange()"></select>
-            </div>
-            <div class="form-field">
-              <label>Carteira</label>
-              <select id="av-carteira" onchange="onAvCarteiraChange()"></select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label>Operador</label>
-              <select id="av-operador"></select>
-            </div>
-            <div class="form-field">
-              <label>Monitor Responsável</label>
-              <select id="av-monitor"></select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Transcrição / IA -->
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">IA — Transcrição e Nota</div>
-            <span class="panel-badge" style="color:#7c3aed;border-color:#7c3aed">INTELIGÊNCIA ARTIFICIAL</span>
-          </div>
-          <div class="upload-zone" id="audio-drop" onclick="document.getElementById('audio-upload').click()">
-            <div class="upload-icon">🎙</div>
-            <div>Arraste o áudio ou clique para enviar</div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">.mp3, .wav, .ogg — máx 50MB (simulado)</div>
-          </div>
-          <input type="file" id="audio-upload" accept="audio/*" style="display:none" onchange="handleAudioUpload(this)" />
-          <div class="sep"></div>
-          <div class="form-field">
-            <label>Ou cole o resumo da ligação (.txt)</label>
-            <textarea placeholder="Cole aqui o texto transcrito ou o resumo da ligação para análise automática de conformidade..." rows="4" id="ai-text-input"></textarea>
-          </div>
-          <div class="form-actions">
-            <button class="btn btn-primary" onclick="runAIAnalysis()">⚡ Analisar com IA</button>
-          </div>
-          <div id="ai-result" style="display:none;margin-top:14px;padding:12px;background:var(--dark);border:1px solid var(--border2);border-radius:10px;font-family:var(--font-mono);font-size:12px;color:var(--neon);line-height:1.7;white-space:pre-line;"></div>
-        </div>
-      </div>
-
-      <!-- Critérios de Avaliação -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Critérios de Qualidade</div>
-          <span class="panel-badge">PONTUAÇÃO MÁXIMA: 100</span>
-        </div>
-        <div class="grid-2" id="criterios-container">
-          <!-- preenchido via JS conforme requisitos da carteira -->
-        </div>
-
-        <div class="sep"></div>
-
-        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);">NOTA CALCULADA:</div>
-            <div id="total-score" style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--neon);text-shadow:var(--neon-glow);">0</div>
-            <div style="font-size:13px;color:var(--text-dim);">/100</div>
-            <span id="total-badge" class="badge badge-c">QUAD C</span>
-          </div>
-          <div style="flex:1;min-width:200px;">
-            <div class="progress-wrap">
-              <div class="progress-fill red-bar" id="total-bar" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-        <div class="form-row">
-          <div class="form-field">
-            <label>Pontos Críticos / Melhoria</label>
-            <textarea placeholder="Descreva os pontos que precisam de atenção..." rows="3" id="av-pontos-criticos"></textarea>
-          </div>
-          <div class="form-field">
-            <label>Pontos Positivos</label>
-            <textarea placeholder="Destaque os acertos do operador..." rows="3" id="av-pontos-positivos"></textarea>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn" onclick="resetAvaliacaoForm()">Limpar</button>
-          <button class="btn btn-primary" onclick="saveAvaliacao()">▶ Salvar Avaliação</button>
-        </div>
-      </div>
-    </div>
-    <!-- ══ CADASTRO ══ -->
-    <div class="page" id="page-cadastro">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 02 — GESTÃO</span>
-          <div class="page-title">Cadastro</div>
-        </div>
-      </div>
-
-      <div class="grid-3" style="margin-bottom:16px;">
-        <div class="panel" style="cursor:pointer;transition:all 0.2s;" onclick="openMonitorModal()" onmouseover="this.style.borderColor='var(--red-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
-          <div style="font-size:28px;margin-bottom:8px;">◎</div>
-          <div class="panel-title">Novo Monitor</div>
-          <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Definir login, senha e setores de atuação</div>
-        </div>
-        <div class="panel" style="cursor:pointer;transition:all 0.2s;" onclick="openCarteiraModal()" onmouseover="this.style.borderColor='var(--red-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
-          <div style="font-size:28px;margin-bottom:8px;">◇</div>
-          <div class="panel-title">Nova Carteira</div>
-          <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Criar e configurar carteiras de cobrança</div>
-        </div>
-        <div class="panel" style="cursor:pointer;transition:all 0.2s;" onclick="openOperadorModal()" onmouseover="this.style.borderColor='var(--red-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
-          <div style="font-size:28px;margin-bottom:8px;">◉</div>
-          <div class="panel-title">Novo Operador</div>
-          <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Cadastrar operador em setor/carteira</div>
-        </div>
-      </div>
-
-      <!-- Tabelas de cadastros existentes -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Monitores Cadastrados</div>
-          <button class="btn btn-primary btn-sm" onclick="openMonitorModal()">+ Adicionar</button>
-        </div>
-        <table class="data-table">
-          <thead><tr><th>Nome</th><th>Login</th><th>Setores</th><th>Avaliações</th><th>Status</th><th></th></tr></thead>
-          <tbody id="monitores-tbody"></tbody>
-        </table>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Carteiras e Requisitos</div>
-          <button class="btn btn-primary btn-sm" onclick="openCarteiraModal()">+ Carteira</button>
-        </div>
-        <table class="data-table">
-          <thead><tr><th>Carteira</th><th>Setor</th><th>Requisitos</th><th>Operadores</th><th>Média</th><th></th></tr></thead>
-          <tbody id="carteiras-tbody"></tbody>
-        </table>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Requisitos de Qualidade</div>
-          <button class="btn btn-primary btn-sm" onclick="openRequisitoModal()">+ Requisito</button>
-        </div>
-        <table class="data-table">
-          <thead><tr><th>Requisito</th><th>Carteira</th><th>Peso</th><th>NGC?</th><th></th></tr></thead>
-          <tbody id="requisitos-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-    <!-- ══ OPERADORES ══ -->
-    <div class="page" id="page-operadores">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 06 — ÁRVORE DE OPERADORES</span>
-          <div class="page-title">Operadores</div>
-        </div>
-        <button class="btn btn-primary" data-adm-only="true" onclick="openOperadorModal()">+ Novo Operador</button>
-      </div>
-
-      <div id="operadores-tree">
-        <!-- preenchido via JS: Setor > Operadores -->
-      </div>
-    </div>
-    <!-- ══ MONITORES (visão ADM) ══ -->
-    <div class="page" id="page-monitores">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 05 — VISÃO MONITORES</span>
-          <div class="page-title">Monitores</div>
-        </div>
-      </div>
-
-      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);" id="monitores-kpi"></div>
-
-      <div class="grid-3" id="monitores-cards"></div>
-    </div>
-
-    <!-- ══ VISÃO MONITOR (restrita ao usuário logado como monitor) ══ -->
-    <div class="page" id="page-minha-equipe">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// MINHA EQUIPE</span>
-          <div class="page-title">Painel do Monitor</div>
-        </div>
-      </div>
-
-      <div class="kpi-grid" id="minha-equipe-kpi"></div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Meus Operadores</div>
-          <span class="panel-badge" id="minha-equipe-setor-badge">SETOR</span>
-        </div>
-        <div id="minha-equipe-ops" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;"></div>
-      </div>
-    </div>
-    <!-- ══ QUADRANTES ══ -->
-    <div class="page" id="page-quadrantes">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 07 — MATRIZ DE DESEMPENHO</span>
-          <div class="page-title">Quadrantes</div>
-        </div>
-      </div>
-
-      <div class="filters-bar">
-        <div class="form-field"><label>Setor</label><select id="f-quad-setor" onchange="refreshQuadrantes()"><option value="">Todos</option></select></div>
-        <div class="form-field"><label>Operador</label><select id="f-quad-operador" onchange="refreshQuadrantes()"><option value="">Todos</option></select></div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
-        <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);">MÉDIA GERAL DA EQUIPE:</div>
-        <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--neon);text-shadow:var(--neon-glow-soft);" id="quad-media-geral">0</div>
-        <div class="badge badge-b" id="quad-media-badge">QUADRANTE —</div>
-      </div>
-
-      <div class="quadrant-grid">
-        <div class="quadrant-cell">
-          <div class="quadrant-label" style="color:#00c850;">QUADRANTE A</div>
-          <div class="quadrant-range" style="color:rgba(0,200,80,0.5);">Notas 90–100 · Alta performance</div>
-          <div class="quadrant-ops" id="quad-a-ops"></div>
-        </div>
-        <div class="quadrant-cell">
-          <div class="quadrant-label" style="color:#ffa000;">QUADRANTE B</div>
-          <div class="quadrant-range" style="color:rgba(255,160,0,0.5);">Notas 80–89 · Desempenho estável</div>
-          <div class="quadrant-ops" id="quad-b-ops"></div>
-        </div>
-        <div class="quadrant-cell" style="grid-column:1/-1;">
-          <div class="quadrant-label" style="color:var(--neon);">QUADRANTE C</div>
-          <div class="quadrant-range" style="color:rgba(255,31,68,0.5);">Notas 0–79 · Plano de desenvolvimento ativo</div>
-          <div class="quadrant-ops" id="quad-c-ops"></div>
-        </div>
-      </div>
-    </div>
-    <!-- ══ HISTÓRICO ══ -->
-    <div class="page" id="page-historico">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 08 — REGISTRO AUDITÁVEL</span>
-          <div class="page-title">Histórico</div>
-        </div>
-      </div>
-
-      <div class="filters-bar">
-        <div class="form-field"><label>Operador</label><select id="f-hist-operador" onchange="refreshHistorico()"><option value="">Todos</option></select></div>
-        <div class="form-field"><label>Monitor</label><select id="f-hist-monitor" onchange="refreshHistorico()"><option value="">Todos</option></select></div>
-        <div class="form-field"><label>Carteira</label><select id="f-hist-carteira" onchange="refreshHistorico()"><option value="">Todas</option></select></div>
-        <div class="form-field"><label>Data início</label><input type="date" id="f-hist-inicio" onchange="refreshHistorico()" /></div>
-        <div class="form-field"><label>Data fim</label><input type="date" id="f-hist-fim" onchange="refreshHistorico()" /></div>
-      </div>
-
-      <div class="panel" style="padding:0;overflow:hidden;">
-        <table class="data-table">
-          <thead><tr><th>Data</th><th>Operador</th><th>Monitor</th><th>Carteira</th><th>Nota</th><th>NGC</th><th>Quad.</th><th></th></tr></thead>
-          <tbody id="historico-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-    <!-- ══ EXPORTAR / IMPORTAR ══ -->
-    <div class="page" id="page-exportar">
-      <div class="page-header">
-        <div>
-          <span class="page-title-tag">// 04 — RELATÓRIOS</span>
-          <div class="page-title">Importar / Exportar</div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Exportar Relatório CSV</div></div>
-          <div class="form-field" style="margin-bottom:12px;"><label>Setor</label><select id="exp-setor"><option value="">Todos</option></select></div>
-          <div class="form-field" style="margin-bottom:12px;"><label>Carteira</label><select id="exp-carteira"><option value="">Todas</option></select></div>
-          <div class="form-row">
-            <div class="form-field"><label>Data da ligação — início</label><input type="date" id="exp-inicio" /></div>
-            <div class="form-field"><label>Data da ligação — fim</label><input type="date" id="exp-fim" /></div>
-          </div>
-          <div class="form-field" style="margin-bottom:16px;"><label>Tipo de relatório</label>
-            <select id="exp-tipo">
-              <option value="detalhado">Avaliações detalhadas</option>
-              <option value="operador">Resumo por operador</option>
-              <option value="monitor">Resumo por monitor</option>
-              <option value="ngc">NGC — Não conformidades</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" style="width:100%;" onclick="exportCSV()">↓ Baixar CSV</button>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Importar Avaliações</div></div>
-          <div class="upload-zone" id="csv-drop" onclick="document.getElementById('csv-upload').click()">
-            <div class="upload-icon">📊</div>
-            <div>Arraste o arquivo CSV ou clique para selecionar</div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Formato padrão NEXUS QA</div>
-          </div>
-          <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="handleCSVUpload(this)" />
-          <div class="panel" style="background:var(--dark);padding:14px;margin-top:14px;">
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.1em;">COLUNAS ESPERADAS</div>
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--neon);line-height:2;word-break:break-all;">data,operador,monitor,carteira,setor,nota,ngc</div>
-          </div>
-          <div id="csv-import-result" style="display:none;margin-top:14px;padding:12px;background:var(--dark);border:1px solid var(--border2);border-radius:10px;font-family:var(--font-mono);font-size:12px;color:var(--neon);"></div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /main-content -->
-</div><!-- /app -->
-<!-- ════ MODALS ════ -->
-
-<!-- Modal: Monitor (criar/editar) -->
-<div class="modal-overlay" id="modal-monitor">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-monitor')">✕</button>
-    <div class="modal-title" id="modal-monitor-title">Novo Monitor</div>
-    <input type="hidden" id="mon-edit-id" />
-    <div class="form-row">
-      <div class="form-field"><label>Nome completo</label><input type="text" id="mon-nome" placeholder="Ex.: Ana Lima" /></div>
-      <div class="form-field"><label>Login</label><input type="text" id="mon-login" placeholder="ana.lima" /></div>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>Senha</label><input type="password" id="mon-senha" placeholder="••••••••" /></div>
-      <div class="form-field"><label>Status</label>
-        <select id="mon-status"><option value="ATIVO">Ativo</option><option value="FÉRIAS">Férias</option><option value="INATIVO">Inativo</option></select>
-      </div>
-    </div>
-    <div class="form-field" style="margin-bottom:14px;">
-      <label>Setores de atuação (selecione um ou mais)</label>
-      <select multiple id="mon-setores" style="height:90px;"></select>
-    </div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-monitor')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveMonitor()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Carteira (criar/editar) -->
-<div class="modal-overlay" id="modal-carteira">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-carteira')">✕</button>
-    <div class="modal-title" id="modal-carteira-title">Nova Carteira</div>
-    <input type="hidden" id="cart-edit-id" />
-    <div class="form-row">
-      <div class="form-field"><label>Nome da carteira</label><input type="text" id="cart-nome" placeholder="Ex.: Varejo Plus" /></div>
-      <div class="form-field"><label>Setor</label><select id="cart-setor"></select></div>
-    </div>
-    <div class="form-field" style="margin-bottom:14px;"><label>Descrição</label><textarea id="cart-desc" placeholder="Descreva o escopo desta carteira..." rows="3"></textarea></div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-carteira')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveCarteira()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Requisito (criar/editar) -->
-<div class="modal-overlay" id="modal-requisito">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-requisito')">✕</button>
-    <div class="modal-title" id="modal-requisito-title">Novo Requisito</div>
-    <input type="hidden" id="req-edit-id" />
-    <div class="form-row">
-      <div class="form-field"><label>Nome do requisito</label><input type="text" id="req-nome" placeholder="Ex.: Identificação correta" /></div>
-      <div class="form-field"><label>Carteira</label><select id="req-carteira"></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>Peso (pontos, 0-10)</label><input type="number" id="req-peso" min="1" max="10" value="10" /></div>
-      <div class="form-field"><label>É NGC?</label><select id="req-ngc"><option value="nao">Não</option><option value="sim">Sim — Zera a nota</option></select></div>
-    </div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-requisito')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveRequisito()">Salvar</button>
-    </div>
-  </div>
-</div>
-<!-- Modal: Operador (criar/editar) -->
-<div class="modal-overlay" id="modal-operador">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-operador')">✕</button>
-    <div class="modal-title" id="modal-operador-title">Novo Operador</div>
-    <input type="hidden" id="op-edit-id" />
-    <div class="form-row">
-      <div class="form-field"><label>Nome completo</label><input type="text" id="op-nome" placeholder="Nome do operador" /></div>
-      <div class="form-field"><label>Matrícula</label><input type="text" id="op-matricula" placeholder="Ex.: 001234" /></div>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>Setor</label><select id="op-setor" onchange="onOpSetorChangeModal()"></select></div>
-      <div class="form-field"><label>Carteira</label><select id="op-carteira"></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>Data de admissão</label><input type="date" id="op-admissao" /></div>
-      <div class="form-field"><label>Monitor responsável</label><select id="op-monitor"></select></div>
-    </div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-operador')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveOperador()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Detalhe Operador (com feedback, plano de ação, histórico individual) -->
-<div class="modal-overlay" id="modal-op-detail">
-  <div class="modal" style="width:680px;">
-    <button class="modal-close" onclick="closeModal('modal-op-detail')">✕</button>
-    <div class="modal-title" id="op-detail-name">Operador</div>
-    <input type="hidden" id="op-detail-id" />
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-      <div id="op-detail-circle" class="score-circle score-a" style="width:64px;height:64px;font-size:20px;">—</div>
+  <!-- ─── SLIDE 0: CAPA ─── -->
+  <div class="slide active" id="s0">
+    <div class="capa-stripe"></div>
+    <div class="capa-logo">Mercado Pago · Cobrança · QA</div>
+    <div class="capa-title">Como você é<br><span>avaliado</span> em cada<br>ligação</div>
+    <div class="capa-sub">Checklist de monitoria - Operadores de Cobrança</div>
+    <div class="capa-total">
       <div>
-        <div style="font-size:13px;color:var(--text-dim);">Setor: <span id="op-detail-setor" style="color:var(--text)">—</span></div>
-        <div style="font-size:13px;color:var(--text-dim);">Quadrante: <span id="op-detail-quad" class="badge badge-a" style="margin-left:4px;">—</span></div>
-        <div style="font-size:13px;color:var(--text-dim);">Avaliações: <span id="op-detail-count" style="color:var(--text)">0</span></div>
+        <small>Pontuação total</small>
+        100 PONTOS
       </div>
     </div>
-    <div class="chart-container" style="height:160px;">
-      <canvas id="chart-op-detail"></canvas>
-    </div>
-    <div class="sep"></div>
+  </div>
 
-    <div class="panel-title" style="margin-bottom:10px;">Histórico de Feedbacks</div>
-    <div id="op-feedback-history" style="max-height:140px;overflow-y:auto;margin-bottom:16px;">
-      <div class="empty-state" style="padding:16px;"><div class="empty-state-text">Nenhum feedback registrado ainda</div></div>
+  <!-- ─── SLIDE 1: VISÃO GERAL ─── -->
+  <div class="slide" id="s1">
+    <div class="slide-header">
+      <div>
+        <div class="slide-eyebrow">Visão Geral</div>
+        <div class="slide-title">5 blocos, 100 pontos</div>
+      </div>
+      <div class="total-badge">NOTA MÁXIMA: 100 pts</div>
     </div>
+    <div class="grid-4">
 
-    <div class="form-row">
-      <div class="form-field"><label>Pontos de Melhoria</label><textarea id="op-pontos-melhoria" placeholder="Registrar pontos de desenvolvimento..." rows="3"></textarea></div>
-      <div class="form-field"><label>Plano de Ação</label><textarea id="op-plano-acao" placeholder="Definir ações e prazos..." rows="3"></textarea></div>
-    </div>
-    <div class="form-field" style="margin-bottom:14px;"><label>Feedback Formal</label><textarea id="op-feedback-formal" placeholder="Registro do feedback aplicado ao operador..." rows="2"></textarea></div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-op-detail')">Fechar</button>
-      <button class="btn btn-primary" onclick="saveOpFeedback()">Salvar feedback</button>
+      <div class="card-base block tilt" data-pct="8">
+        <div class="block-label">Bloco 01</div>
+        <div class="block-name">Abertura e Validação</div>
+        <div class="block-pct">8 <small>pts</small></div>
+        <div class="block-items">
+          <div class="block-item">Apresentação pessoal <span>2 pts</span></div>
+          <div class="block-item">Apresentação da empresa <span>2 pts</span></div>
+          <div class="block-item">Validação de identidade <span>4 pts</span></div>
+        </div>
+      </div>
+
+      <div class="card-base block tilt" data-pct="19">
+        <div class="block-label">Bloco 02</div>
+        <div class="block-name">Investigação da Dívida</div>
+        <div class="block-pct">19 <small>pts</small></div>
+        <div class="block-items">
+          <div class="block-item">Apresentação da dívida <span>6 pts</span></div>
+          <div class="block-item">Motivo do atraso <span>4 pts</span></div>
+          <div class="block-item">Contexto financeiro <span>9 pts</span></div>
+        </div>
+      </div>
+
+      <div class="card-base block tilt" data-pct="38">
+        <div class="block-label">Bloco 03</div>
+        <div class="block-name">Estratégia e Negociação</div>
+        <div class="block-pct">38 <small>pts</small></div>
+        <div class="block-items">
+          <div class="block-item">Manejo de objeções <span>15 pts</span></div>
+          <div class="block-item">Proposta estratégica <span>20 pts</span></div>
+          <div class="block-item">Uso de histórico <span>3 pts</span></div>
+        </div>
+      </div>
+
+      <div class="card-base block tilt" data-pct="8">
+        <div class="block-label">Bloco 04</div>
+        <div class="block-name">Encerramento</div>
+        <div class="block-pct">8 <small>pts</small></div>
+        <div class="block-items">
+          <div class="block-item">Recapitulação / Próximos passos <span>4 pts</span></div>
+          <div class="block-item">Check de dados (telefone) <span>4 pts</span></div>
+        </div>
+      </div>
+
+      <div class="card-base block tilt" style="grid-column: span 2;" data-pct="27">
+        <div class="block-label">Bloco 05</div>
+        <div class="block-name">Soft Skills — Habilidades Comportamentais</div>
+        <div class="block-pct">27 <small>pts</small></div>
+        <div class="block-items" style="flex-direction: row; gap: 20px;">
+          <div class="block-item">Controle conversacional <span>10 pts</span></div>
+          <div class="block-item">Manejo emocional <span>10 pts</span></div>
+          <div class="block-item">Linguagem positiva <span>7 pts</span></div>
+        </div>
+      </div>
+
+      <div class="card-base block tilt" style="grid-column: span 2; background: rgba(255,230,0,0.06); border-top-color: rgba(255,230,0,0.4);" data-pct="">
+        <div class="block-label">⚠ Atenção</div>
+        <div class="block-name" style="font-size:13px; font-weight:500; color: rgba(255,255,255,0.7); line-height:1.55;">
+          O bloco de <strong style="color:#fff">NCG / Compliance</strong> não soma pontos, ele <strong style="color:#FF5252">desconta</strong> da nota final. Irregularidades podem zerar o atendimento independentemente do desempenho nos demais blocos.
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
 
-<!-- Modal: Ver avaliação (histórico) -->
-<div class="modal-overlay" id="modal-ver-avaliacao">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-ver-avaliacao')">✕</button>
-    <div class="modal-title">Detalhe da Avaliação</div>
-    <div id="ver-avaliacao-content" style="font-size:13px;line-height:1.8;color:var(--text-mid);"></div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-ver-avaliacao')">Fechar</button>
+
+  <!-- ─── SLIDE 2: ABERTURA ─── -->
+  <div class="slide criteria-slide" id="s2">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 01</div>
+        <div class="cs-title">Abertura e Validação</div>
+        <div class="cs-score-big">8</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">A primeira impressão define o ritmo da ligação. Identifique-se corretamente e confirme quem está do outro lado antes de falar qualquer valor.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Apresentação Pessoal</div>
+            <div class="cc-pts yellow">2 pts</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag ok">✓ CERTO</span> <strong>"Bom dia, me chamo Talita..."</strong><br>
+            Mencione seu primeiro nome logo no início da chamada, sem exceção.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Apresentação da Empresa</div>
+            <div class="cc-pts yellow">2 pts</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag ok">✓ CERTO</span> <strong>"...sou representante do Mercado Pago, tudo bem?"</strong><br>
+            O cliente precisa saber com quem está falando desde o primeiro segundo.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card ok">
+          <div class="cc-head">
+            <div class="cc-name">Validação de Identidade</div>
+            <div class="cc-pts yellow">4 pts</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag ok">✓ CERTO</span> <strong>"Poderia me informar os 3 primeiros dígitos do CPF ou e-mail?"</strong><br><br>
+            <span class="tag err">✗ ERRADO</span> Falar o valor da dívida antes da confirmação — isso é <strong>quebra de sigilo bancário</strong>.<br><br>
+            <span class="tag err">✗ ERRADO</span> Aceitar apenas um "sim" como confirmação de identidade.
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Modal: Confirmação de exclusão -->
-<div class="modal-overlay" id="modal-confirm">
-  <div class="modal" style="width:400px;">
-    <div class="modal-title">Confirmar ação</div>
-    <div id="confirm-message" style="font-size:13px;color:var(--text-mid);margin-bottom:20px;">Tem certeza?</div>
-    <div class="form-actions">
-      <button class="btn" onclick="closeModal('modal-confirm')">Cancelar</button>
-      <button class="btn btn-danger" id="confirm-btn" onclick="">Confirmar</button>
+  <!-- ─── SLIDE 3: INVESTIGAÇÃO ─── -->
+  <div class="slide criteria-slide" id="s3">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 02</div>
+        <div class="cs-title">Investigação da Dívida</div>
+        <div class="cs-score-big">19</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">Entenda a dor do cliente antes de propor qualquer solução. Quanto mais contexto você tiver, melhor será sua proposta.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Apresentação da Dívida</div>
+            <div class="cc-pts yellow">6 pts · Parcial: 3</div>
+          </div>
+          <div class="cc-body">
+            Informe os <strong>3 elementos obrigatórios</strong>: produto + valor atualizado + dias em atraso.<br><br>
+            <span class="tag ok">✓ COMPLETO</span> <strong>"...cartão de crédito + empréstimo, R$ 19.726,00, com 1.243 dias em atraso."</strong><br>
+            <span class="tag err">✗ PARCIAL</span> Citar valor mas esquecer os dias em atraso → <strong>3 pts apenas</strong>.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Motivo do Atraso</div>
+            <div class="cc-pts yellow">4 pts</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag ok">✓ CERTO</span> Pergunta aberta: <strong>"O senhor se recorda qual foi o motivo do atraso?"</strong><br>
+            <span class="tag err">✗ ERRADO</span> Pergunta fechada/sugestiva: <strong>"Foi doença ou falta de trabalho?"</strong> - 0 pontos.<br><br>
+            Se a resposta for genérica ("tô sem dinheiro"), <strong>aprofunde a sondagem</strong>.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card ok">
+          <div class="cc-head">
+            <div class="cc-name">Contexto Financeiro</div>
+            <div class="cc-pts yellow">9 pts</div>
+          </div>
+          <div class="cc-body">
+            Entenda a capacidade de pagamento atual: 1 pergunta aberta <em>ou</em> 2 fechadas.<br><br>
+            <span class="tag ok">✓ EXEMPLO</span> <strong>"A senhora já está trabalhando? Tem alguma previsão de renda?"</strong><br>
+            <span class="tag exc">★ EXCEÇÃO</span> Cliente aceita pagar no mesmo dia ou em até 48h sem objeções → <strong>pontos garantidos automaticamente</strong>.
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
+
+  <!-- ─── SLIDE 4: NEGOCIAÇÃO — OBJEÇÕES ─── -->
+  <div class="slide criteria-slide" id="s4">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 03 · Parte 1</div>
+        <div class="cs-title">Manejo de Objeções</div>
+        <div class="cs-score-big">15</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">O maior bloco da avaliação começa aqui. Quando o cliente diz "não", a ligação não acabou, ela está apenas começando.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card ok">
+          <div class="cc-head">
+            <div class="cc-name">Reverter a recusa com argumentos</div>
+            <div class="cc-pts yellow">15 pts</div>
+          </div>
+          <div class="cc-body">
+            Você não pode aceitar o "não" de cara. Use os <strong>benefícios do acordo</strong> (limpar o nome, manter histórico) ou as <strong>consequências da falta de pagamento</strong> (perda de descontos, juros).
+
+            <div class="quote cli">
+              <div class="avatar">C</div>
+              <div class="quote-text">"Não tenho como pagar isso agora, não."</div>
+            </div>
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Entendo. Mas olha só: seu empréstimo teve um <strong>desconto de R$ 4.200</strong> aplicado nessa proposta — se a gente deixar passar, esse valor volta a ser cobrado integralmente. Vamos garantir esse desconto hoje?"</div>
+            </div>
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Fechando hoje, seu nome sai da lista de restrição e você volta a usar o limite normalmente. Consegue um valor menor pra começarmos?"</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-base criterion-card">
+          <div class="cc-head">
+            <div class="cc-name">Por que perde ponto</div>
+            <div class="cc-pts">0 pts</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag err">✗ ERRADO</span> Aceitar o "não" na primeira tentativa, sem oferecer nenhum argumento de persuasão.<br>
+            <span class="tag err">✗ ERRADO</span> Apenas avisar sobre a negativação no final da chamada, quando já desistiu de negociar.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Quebra de objeção - buscar alternativas</div>
+            <div class="cc-pts yellow">complementar</div>
+          </div>
+          <div class="cc-body">
+            Verifique se há um familiar ou amigo que possa ajudar com o pagamento.
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Tem alguém que consiga te ajudar hoje? Assim você evita as penalidades diárias."</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 4B: NEGOCIAÇÃO — PROPOSTA ─── -->
+  <div class="slide criteria-slide" id="s4b">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 03 · Parte 2</div>
+        <div class="cs-title">Proposta e Histórico</div>
+        <div class="cs-score-big">23</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">Estruture a proposta na ordem certa e use o passado do cliente a seu favor para reforçar o compromisso.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card ok">
+          <div class="cc-head">
+            <div class="cc-name">Proposta Estratégica (fluxo gradativo)</div>
+            <div class="cc-pts yellow">20 pts · Parcial: 10</div>
+          </div>
+          <div class="cc-body">
+            Para dívidas &gt;90 dias, siga o fluxo em ordem: <strong>1º Quitação à vista → 2º Parcelamento → 3º Novas propostas</strong>
+
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Hoje sua dívida está em R$ 19.726. À vista, com desconto, fecha em <strong>R$ 14.200</strong>. Consegue pagar ainda hoje?"</div>
+            </div>
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Sem problemas. Consigo parcelar em <strong>6x de R$ 2.850</strong>, sem entrada. Podemos seguir assim?"</div>
+            </div>
+
+            <span class="tag err">✗ PARCIAL</span> Oferecer quitação, levar "não" e <em>não</em> apresentar o parcelamento em seguida → <strong>10 pts (metade)</strong>.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Uso de Histórico</div>
+            <div class="cc-pts yellow">3 pts</div>
+          </div>
+          <div class="cc-body">
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Vi aqui que em março a gente já fez um acordo que não foi cumprido. Dessa vez quero te ajudar a fechar algo que caiba no seu bolso. Combinado?"</div>
+            </div>
+            <span class="tag err">✗ ERRADO</span> Usar só argumentos sobre o futuro, sem citar o comportamento passado → <strong>0 pts</strong>.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 4C: SONDAGEM ─── -->
+  <div class="slide criteria-slide" id="s4c">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 03 · Parte 3</div>
+        <div class="cs-title">Sondagem Financeira</div>
+        <div class="cs-score-big">9</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">Antes de propor qualquer coisa, entenda o que o cliente tem disponível hoje. Isso direciona toda a negociação.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Capacidade de Pagamento</div>
+            <div class="cc-pts yellow">9 pts</div>
+          </div>
+          <div class="cc-body">
+            Entenda a capacidade de pagamento atual: 1 pergunta aberta <em>ou</em> 2 fechadas.
+
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Você tem algum valor disponível pra negociar ainda hoje?"</div>
+            </div>
+            <div class="quote cli">
+              <div class="avatar">C</div>
+              <div class="quote-text">"Tenho uns R$ 1.500 sobrando esse mês."</div>
+            </div>
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Perfeito, vamos usar esse valor como entrada e parcelar o restante."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-base criterion-card">
+          <div class="cc-head">
+            <div class="cc-name">Exceção automática</div>
+            <div class="cc-pts">★</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag exc">★ EXCEÇÃO</span> Se o cliente aceitar pagar no mesmo dia ou em até 48h sem objeções, os pontos são garantidos automaticamente, não é necessário sondar mais.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 5: ENCERRAMENTO ─── -->
+  <div class="slide criteria-slide" id="s5">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 04</div>
+        <div class="cs-title">Encerramento</div>
+        <div class="cs-score-big">8</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">Garanta que o cliente saia da ligação com todas as informações corretas e sem dúvidas sobre os próximos passos.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Recapitulação / Próximos Passos</div>
+            <div class="cc-pts yellow">4 pts · Parcial: 2</div>
+          </div>
+          <div class="cc-body">
+            Com acordo: confirme os <strong>3 elementos</strong> - valor, data e forma de pagamento (ex: app).<br>
+            Sem acordo (notificado): oriente sobre os canais de contato futuro, como o 0800.
+
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Então fica combinado: <strong>R$ 2.850</strong>, todo dia <strong>10</strong> dos próximos 6 meses, direto pelo app do Mercado Pago. Combinado assim?"</div>
+            </div>
+
+            <span class="tag err">✗ PARCIAL</span> Confirmar valor e app, mas esquecer de repetir a data exata → <strong>2 pts apenas</strong>.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Check de Dados - Telefone</div>
+            <div class="cc-pts yellow">4 pts</div>
+          </div>
+          <div class="cc-body">
+            O operador deve confirmar <strong>ativamente, através de uma pergunta</strong>, se o número em uso é o melhor para contato.
+
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Esse número final, dezoito zero zero, é o melhor número de contato?"</div>
+            </div>
+
+            <span class="tag err">✗ ERRADO</span> Afirmar em vez de perguntar: <em>"O melhor contato pra falar com você é o final..."</em> → <strong>0 pts</strong>.<br>
+            <span class="tag err">✗ ERRADO</span> Focar apenas no e-mail e esquecer de checar o telefone.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 5B: SOFT SKILLS ─── -->
+  <div class="slide criteria-slide" id="s5b">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 05 · Parte 1</div>
+        <div class="cs-title">Controle e Linguagem</div>
+        <div class="cs-score-big">17</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">Como você guia a conversa e o vocabulário que usa ao longo de toda a ligação.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card ok">
+          <div class="cc-head">
+            <div class="cc-name">Controle Conversacional</div>
+            <div class="cc-pts yellow">10 pts</div>
+          </div>
+          <div class="cc-body">
+            Mantenha as rédeas da ligação: não se abata na primeira objeção, contorne desvios de assunto e guie o cliente pacientemente, inclusive em dificuldades técnicas no app.<br><br>
+            <span class="tag err">✗ ERRADO</span> Desistir precocemente da negociação na primeira objeção, ou tentar vender o produto errado por falta de atenção na tela.
+          </div>
+        </div>
+
+        <div class="card-base criterion-card info">
+          <div class="cc-head">
+            <div class="cc-name">Linguagem Positiva</div>
+            <div class="cc-pts yellow">7 pts</div>
+          </div>
+          <div class="cc-body">
+            Postura profissional e colaborativa, com expressões construtivas, foco em soluções em vez de problemas. Evite termos impositivos e palavras que gerem bloqueio.
+
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Parabéns pelo seu acordo! A partir de hoje seu nome já entra no fluxo de regularização."</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 5C: MANEJO EMOCIONAL ─── -->
+  <div class="slide criteria-slide" id="s5c">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Bloco 05 · Parte 2</div>
+        <div class="cs-title">Manejo Emocional</div>
+        <div class="cs-score-big">10</div>
+        <div class="cs-score-label">pontos disponíveis</div>
+        <div class="cs-desc">Quando o cliente trouxer uma dor real, a forma como você responde define o resto da ligação.</div>
+      </div>
+      <div class="cs-right">
+
+        <div class="card-base criterion-card ok">
+          <div class="cc-head">
+            <div class="cc-name">Validar a dor e adaptar a proposta</div>
+            <div class="cc-pts yellow">10 pts</div>
+          </div>
+          <div class="cc-body">
+            Quando o cliente trouxer desemprego, doença, falecimento familiar ou acidente, <strong>valide essa dor verbalmente</strong> e adapte a proposta.
+
+            <div class="quote cli">
+              <div class="avatar">C</div>
+              <div class="quote-text">"Eu fiquei desempregado e não consegui pagar nada esse período."</div>
+            </div>
+            <div class="quote op">
+              <div class="avatar">O</div>
+              <div class="quote-text">"Entendo, eu compreendo a sua situação. Quero ver se existe alguma possibilidade pra te ajudar a sair dessa..."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-base criterion-card">
+          <div class="cc-head">
+            <div class="cc-name">Por que perde ponto / Exceção</div>
+            <div class="cc-pts">0 pts</div>
+          </div>
+          <div class="cc-body">
+            <span class="tag err">✗ ERRADO</span> Responder com um "Ah, correto" mecânico e já emendar a proposta, como se o cliente não tivesse dito nada.<br><br>
+            <span class="tag exc">★ NOTA</span> Se o cliente não trouxer carga emocional, os 10 pts são garantidos automaticamente, o critério não se aplica.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 6: NCG / COMPLIANCE ─── -->
+  <div class="slide criteria-slide" id="s6">
+    <div class="cs-slide-inner">
+      <div class="cs-left">
+        <div class="cs-section">Atenção — NCG</div>
+        <div class="cs-title">Compliance e Irregularidades</div>
+        <div class="cs-score-big" style="color: #FF5252;">−100%</div>
+        <div class="cs-score-label">desconto sobre a nota final</div>
+        <div class="cs-desc">O NCG desconta sobre a nota já calculada nos outros blocos. Mesmo com 100 pts de gestão, uma violação zera ou penaliza gravemente a avaliação.</div>
+      </div>
+      <div class="cs-right">
+        <div class="ncg-grid">
+
+        <div class="ncg-grid-label" style="color:#FF8A65;">Penalização Parcial</div>
+
+        <div class="card-base ncg-card partial">
+          <span class="ncg-badge partial">−25%</span>
+          <div class="ncg-name">Mal registro ou omissão de tabulação</div>
+          <div class="ncg-desc">Não registrar 100% dos contatos no Engage, não atualizar RFDs ou classificar o caso mais de uma vez.</div>
+        </div>
+
+        <div class="card-base ncg-card partial">
+          <span class="ncg-badge partial">−50%</span>
+          <div class="ncg-name">Informação incorreta ou incompleta</div>
+          <div class="ncg-desc">Passar condições fora da política vigente ou deixar de responder algo importante ao usuário.</div>
+        </div>
+
+        <div class="card-base ncg-card partial">
+          <span class="ncg-badge partial">−50%</span>
+          <div class="ncg-name">Promessa inadequada / sem certeza de pagamento</div>
+          <div class="ncg-desc">Registrar promessa com data, valor ou condição incorretos, ou sem confirmação explícita do usuário.</div>
+        </div>
+
+        <div class="card-base ncg-card partial">
+          <span class="ncg-badge partial">−50%</span>
+          <div class="ncg-name">Condonar punitivos incorretamente</div>
+          <div class="ncg-desc">Retirar juros ou encargos sem autorização ou necessidade dentro da política vigente.</div>
+        </div>
+
+        <div class="ncg-grid-label" style="color:#FF5252;">Penalização Total (100%)</div>
+
+        <div class="card-base ncg-card full">
+          <span class="ncg-badge full">−100%</span>
+          <div class="ncg-name">Quebra de sigilo bancário</div>
+          <div class="ncg-desc">Abrir informações de débito sem antes confirmar CPF e/ou e-mail do titular.</div>
+        </div>
+
+        <div class="card-base ncg-card full">
+          <span class="ncg-badge full">−100%</span>
+          <div class="ncg-name">Insultar o usuário / Difamação</div>
+          <div class="ncg-desc">Atitude que atinja a dignidade do cliente, baixo calão, discutir com o cliente, concordar com crítica negativa ou falar mal de colegas/empresa.</div>
+        </div>
+
+        <div class="card-base ncg-card full">
+          <span class="ncg-badge full">−100%</span>
+          <div class="ncg-name">Derrubar o contato</div>
+          <div class="ncg-desc">Aplicar DROP indevidamente, não ativar assíncrono quando necessário, ou derivar caso que deveria ter atendido.</div>
+        </div>
+
+        <div class="card-base ncg-card full">
+          <span class="ncg-badge full">−100%</span>
+          <div class="ncg-name">Induzir a órgãos reguladores</div>
+          <div class="ncg-desc">Sugerir SAC/ouvidoria proativamente. Só é permitido se o próprio usuário solicitar o caminho.</div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 7: FINAL (REVISADO) ─── -->
+  <div class="slide" id="s7">
+    <div class="final-stripe"></div>
+    <div class="final-icon">🎯</div>
+    <div class="final-eyebrow">Resumo final</div>
+    <div class="final-title">Técnica todo mundo aprende.<br><span>Postura</span> é o que separa o atendimento bom do excelente.</div>
+    <div class="final-sub">Os 5 blocos cobrem o atendimento inteiro, mas alguns comportamentos pesam mais que outros na nota. Fique de olho nestes:</div>
+
+    <div class="final-cards">
+      <div class="final-card">
+        <div class="fc-pts">20 <small>pts</small></div>
+        <div class="fc-label">Fluxo gradativo de proposta (quitação → parcelamento → nova proposta)</div>
+      </div>
+      <div class="final-card">
+        <div class="fc-pts">15 <small>pts</small></div>
+        <div class="fc-label">Reverter objeção — nunca aceitar o "não" na primeira tentativa</div>
+      </div>
+      <div class="final-card">
+        <div class="fc-pts">10 <small>pts</small></div>
+        <div class="fc-label">Manejo emocional — validar a dor real do cliente</div>
+      </div>
+      <div class="final-card">
+        <div class="fc-pts">10 <small>pts</small></div>
+        <div class="fc-label">Controle conversacional ao longo de toda a ligação</div>
+      </div>
+      <div class="final-card guard">
+        <div class="fc-pts">NCG</div>
+        <div class="fc-label">Zero irregularidades — sigilo bancário, respeito e registro corretos</div>
+      </div>
+    </div>
+
+    <div class="final-total">
+      Juntos, esses pontos somam <span>55</span> dos 100 — mais da metade da nota
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div class="nav">
+  <button id="prev" disabled>←</button>
+  <div class="dots" id="dots"></div>
+  <span id="slide-counter">1 / 8</span>
+  <button id="next">→</button>
 </div>
 
-<!-- Toast -->
-<div id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ════════════════════════════════════════════════════════════════
-   NEXUS QA — ESTADO CENTRAL + PERSISTÊNCIA (Supabase)
-   Tudo fica em DB (em memória) e é sincronizado com o Supabase
-   a cada commit(). DB.user é sessão local e não é sincronizado.
-════════════════════════════════════════════════════════════════ */
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
 
-const SUPABASE_URL = 'https://ytatwhupqkqwiudkqpmf.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_Ca2e1tlXDh5Argh_17dWJg_G-cPALcq';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const dotsEl = document.getElementById('dots');
+  const counter = document.getElementById('slide-counter');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
 
-function uid(prefix){ return prefix+'_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
-
-function seedDB(){
-  const setores = ['Varejo','Premium','PJ','Recuperação'];
-
-  const carteiras = [
-    { id:'cart_varejo',  nome:'Varejo',       setor:'Varejo' },
-    { id:'cart_premium', nome:'Premium',      setor:'Premium' },
-    { id:'cart_pj',      nome:'PJ',           setor:'PJ' },
-    { id:'cart_recup',   nome:'Recuperação',  setor:'Recuperação' },
-  ];
-
-  const requisitos = [
-    { id:uid('req'), nome:'Identificação correta',        carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Verificação de dados',         carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Apresentação da dívida',       carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Escuta ativa',                 carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Oferta de acordo',              carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Proibições BACEN',              carteiraId:'cart_varejo', peso:10, ngc:true  },
-    { id:uid('req'), nome:'Linguagem adequada',            carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Conformidade com script',       carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Encerramento correto',          carteiraId:'cart_varejo', peso:10, ngc:false },
-    { id:uid('req'), nome:'Resolubilidade',                carteiraId:'cart_varejo', peso:10, ngc:false },
-  ];
-  // Aplica o mesmo conjunto-base às demais carteiras (clonado)
-  ['cart_premium','cart_pj','cart_recup'].forEach(cid=>{
-    requisitos.slice(0,10).forEach(r=>{
-      requisitos.push({ id:uid('req'), nome:r.nome, carteiraId:cid, peso:r.peso, ngc:r.ngc });
-    });
+  // build dots
+  slides.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' active':'');
+    d.addEventListener('click', ()=>goTo(i));
+    dotsEl.appendChild(d);
   });
 
-  const monitores = [
-    { id:'mon_ana',   nome:'Ana Lima',    login:'ana.lima',    senha:'1234', setores:['Varejo','Premium'], status:'ATIVO' },
-    { id:'mon_pedro', nome:'Pedro Souza', login:'pedro.souza', senha:'1234', setores:['PJ','Recuperação'],  status:'ATIVO' },
-    { id:'mon_carla', nome:'Carla Mendes',login:'carla.m',     senha:'1234', setores:['Varejo'],            status:'FÉRIAS' },
-  ];
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    counter.textContent = `${cur+1} / ${total}`;
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === total - 1;
+  }
 
-  const operadores = [
-    { id:uid('opx'), nome:'Carlos Mendes',    matricula:'001', setor:'Varejo', carteiraId:'cart_varejo', monitorId:'mon_ana',   admissao:'2024-02-10' },
-    { id:uid('opx'), nome:'Julia Rocha',      matricula:'002', setor:'Varejo', carteiraId:'cart_varejo', monitorId:'mon_ana',   admissao:'2023-11-03' },
-    { id:uid('opx'), nome:'Marcus Oliveira',  matricula:'003', setor:'Varejo', carteiraId:'cart_varejo', monitorId:'mon_ana',   admissao:'2024-05-20' },
-    { id:uid('opx'), nome:'Fernanda Torres',  matricula:'004', setor:'Varejo', carteiraId:'cart_varejo', monitorId:'mon_carla', admissao:'2023-08-15' },
-    { id:uid('opx'), nome:'Priscila Costa',   matricula:'005', setor:'PJ',     carteiraId:'cart_pj',     monitorId:'mon_pedro', admissao:'2024-01-09' },
-    { id:uid('opx'), nome:'Marcos Lima',      matricula:'006', setor:'PJ',     carteiraId:'cart_pj',     monitorId:'mon_pedro', admissao:'2023-06-22' },
-    { id:uid('opx'), nome:'Ricardo Alves',    matricula:'007', setor:'Recuperação', carteiraId:'cart_recup', monitorId:'mon_pedro', admissao:'2024-03-01' },
-    { id:uid('opx'), nome:'Renata Silva',     matricula:'008', setor:'Premium', carteiraId:'cart_premium', monitorId:'mon_ana', admissao:'2023-09-12' },
-    { id:uid('opx'), nome:'Tatiana Borges',   matricula:'009', setor:'Premium', carteiraId:'cart_premium', monitorId:'mon_ana', admissao:'2024-04-18' },
-  ];
+  prevBtn.addEventListener('click', ()=>{ if(cur>0) goTo(cur-1); });
+  nextBtn.addEventListener('click', ()=>{ if(cur<total-1) goTo(cur+1); });
 
-  // gera avaliações históricas plausíveis para os últimos 6 meses
-  const avaliacoes = [];
-  const today = new Date();
-  operadores.forEach(op=>{
-    const baseScore = 70 + Math.random()*28;
-    const nAvals = 8 + Math.floor(Math.random()*10);
-    for(let i=0;i<nAvals;i++){
-      const daysAgo = Math.floor(Math.random()*180);
-      const d = new Date(today); d.setDate(d.getDate()-daysAgo);
-      const drift = (Math.random()-0.5)*14;
-      let score = Math.max(40, Math.min(100, Math.round(baseScore + drift)));
-      const isNgc = Math.random()<0.08;
-      if(isNgc) score = Math.min(score, 65);
-      avaliacoes.push({
-        id: uid('av'),
-        data: d.toISOString().slice(0,10),
-        timestamp: d.toISOString(),
-        telefone: '(11) 9'+Math.floor(1000+Math.random()*8999)+'-'+Math.floor(1000+Math.random()*8999),
-        setor: op.setor,
-        carteiraId: op.carteiraId,
-        operadorId: op.id,
-        monitorId: op.monitorId,
-        nota: score,
-        ngc: isNgc ? 1 : 0,
-        pontosCriticos: '',
-        pontosPositivos: '',
+  document.addEventListener('keydown', e => {
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') { if(cur<total-1) goTo(cur+1); }
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') { if(cur>0) goTo(cur-1); }
+  });
+
+  /* ── Cursor-interactive effects ── */
+  const glow = document.getElementById('cursor-glow');
+  let glowVisible = false;
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+    if (!glowVisible) { glow.style.opacity = '1'; glowVisible = true; }
+  });
+  document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; glowVisible = false; });
+
+  // Spotlight (radial highlight) on hover for cards/blocks
+  function bindSpotlight(selector) {
+    document.querySelectorAll(selector).forEach(el => {
+      el.addEventListener('mousemove', e => {
+        const r = el.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width) * 100;
+        const y = ((e.clientY - r.top) / r.height) * 100;
+        el.style.setProperty('--mx', x + '%');
+        el.style.setProperty('--my', y + '%');
       });
-    }
-  });
-  avaliacoes.sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
-
-  return {
-    user: null,
-    setores,
-    carteiras,
-    requisitos,
-    monitores,
-    operadores,
-    avaliacoes,
-    feedbacks: [], // { id, operadorId, pontosMelhoria, planoAcao, feedbackFormal, autor, timestamp }
-  };
-}
-
-/* ───── Mapeamento JS (camelCase) ↔ Supabase (snake_case) ───── */
-const TABLES = {
-  carteiras: {
-    toRow:   c => ({ id:c.id, nome:c.nome, setor:c.setor, descricao:c.descricao||null }),
-    fromRow: r => ({ id:r.id, nome:r.nome, setor:r.setor, descricao:r.descricao||'' }),
-  },
-  requisitos: {
-    toRow:   r => ({ id:r.id, nome:r.nome, carteira_id:r.carteiraId, peso:r.peso, ngc:!!r.ngc }),
-    fromRow: r => ({ id:r.id, nome:r.nome, carteiraId:r.carteira_id, peso:r.peso, ngc:!!r.ngc }),
-  },
-  monitores: {
-    toRow:   m => ({ id:m.id, nome:m.nome, login:m.login, senha:m.senha, setores:m.setores, status:m.status }),
-    fromRow: r => ({ id:r.id, nome:r.nome, login:r.login, senha:r.senha, setores:r.setores||[], status:r.status }),
-  },
-  operadores: {
-    toRow:   o => ({ id:o.id, nome:o.nome, matricula:o.matricula, setor:o.setor, carteira_id:o.carteiraId, monitor_id:o.monitorId, admissao:o.admissao || null }),
-    fromRow: r => ({ id:r.id, nome:r.nome, matricula:r.matricula, setor:r.setor, carteiraId:r.carteira_id, monitorId:r.monitor_id, admissao:r.admissao }),
-  },
-  avaliacoes: {
-    toRow:   a => ({ id:a.id, data:a.data, timestamp:a.timestamp, telefone:a.telefone, setor:a.setor, carteira_id:a.carteiraId, operador_id:a.operadorId, monitor_id:a.monitorId, nota:a.nota, ngc:a.ngc, pontos_criticos:a.pontosCriticos, pontos_positivos:a.pontosPositivos }),
-    fromRow: r => ({ id:r.id, data:r.data, timestamp:r.timestamp, telefone:r.telefone, setor:r.setor, carteiraId:r.carteira_id, operadorId:r.operador_id, monitorId:r.monitor_id, nota:Number(r.nota), ngc:r.ngc, pontosCriticos:r.pontos_criticos||'', pontosPositivos:r.pontos_positivos||'' }),
-  },
-  feedbacks: {
-    toRow:   f => ({ id:f.id, operador_id:f.operadorId, pontos_melhoria:f.pontosMelhoria, plano_acao:f.planoAcao, feedback_formal:f.feedbackFormal, autor:f.autor, timestamp:f.timestamp }),
-    fromRow: r => ({ id:r.id, operadorId:r.operador_id, pontosMelhoria:r.pontos_melhoria, planoAcao:r.plano_acao, feedbackFormal:r.feedback_formal, autor:r.autor, timestamp:r.timestamp }),
-  },
-};
-
-/* setores é só uma lista de nomes — a tabela usa id serial próprio, então sincroniza por nome */
-async function syncSetores(nomes){
-  try{
-    const { data: existing } = await supabase.from('setores').select('nome');
-    const existentes = (existing||[]).map(r=>r.nome);
-    const novos = nomes.filter(n=>!existentes.includes(n));
-    const remover = existentes.filter(n=>!nomes.includes(n));
-    if(novos.length) await supabase.from('setores').insert(novos.map(nome=>({nome})));
-    if(remover.length) await supabase.from('setores').delete().in('nome', remover);
-  }catch(e){ console.error('Erro ao sincronizar setores', e); throw e; }
-}
-
-/* upsert do estado atual de uma tabela no Supabase */
-async function upsertTable(table, localArray){
-  const { toRow } = TABLES[table];
-  const rows = localArray.map(toRow);
-  if(!rows.length) return;
-  const { error } = await supabase.from(table).upsert(rows);
-  if(error){ console.error(`Erro ao salvar ${table}`, error); throw error; }
-}
-
-/* remove no Supabase os registros que não existem mais localmente */
-async function deleteRemoved(table, localArray){
-  const localIds = localArray.map(x=>x.id);
-  const { data: existing, error } = await supabase.from(table).select('id');
-  if(error){ console.error(`Erro ao ler ${table} para limpeza`, error); throw error; }
-  const remover = (existing||[]).map(r=>r.id).filter(id=>!localIds.includes(id));
-  if(remover.length){
-    const { error: delErr } = await supabase.from(table).delete().in('id', remover);
-    if(delErr){ console.error(`Erro ao remover registros de ${table}`, delErr); throw delErr; }
-  }
-}
-
-async function fetchTable(table){
-  const { fromRow } = TABLES[table];
-  const { data, error } = await supabase.from(table).select('*');
-  if(error){ console.error(`Erro ao ler ${table}`, error); return []; }
-  return (data||[]).map(fromRow);
-}
-
-let DB = null;
-
-async function initDB(){
-  try{
-    const [setoresRes, carteiras, requisitos, monitores, operadores, avaliacoes, feedbacks] = await Promise.all([
-      supabase.from('setores').select('*'),
-      fetchTable('carteiras'),
-      fetchTable('requisitos'),
-      fetchTable('monitores'),
-      fetchTable('operadores'),
-      fetchTable('avaliacoes'),
-      fetchTable('feedbacks'),
-    ]);
-
-    if(operadores.length === 0){
-      // banco vazio (primeira conexão) — semeia dados de exemplo e envia ao Supabase
-      DB = seedDB();
-      await persistDB(DB);
-      return;
-    }
-
-    DB = {
-      user: null,
-      setores: (setoresRes.data||[]).map(r=>r.nome),
-      carteiras, requisitos, monitores, operadores, avaliacoes, feedbacks,
-    };
-  }catch(e){
-    console.error('Falha ao conectar ao Supabase, usando dados de exemplo locais.', e);
-    DB = seedDB();
-    toast('⚠ Sem conexão com o banco — usando dados temporários');
-  }
-}
-
-const dbReady = initDB();
-
-async function persistDB(db){
-  // setores não tem relação de FK com nada
-  await syncSetores(db.setores);
-
-  // 1) upsert pai → filho: garante que toda FK referenciada já exista antes do filho ser salvo
-  await upsertTable('carteiras', db.carteiras);
-  await upsertTable('requisitos', db.requisitos);
-  await upsertTable('monitores', db.monitores);
-  await upsertTable('operadores', db.operadores);
-  await upsertTable('avaliacoes', db.avaliacoes);
-  await upsertTable('feedbacks', db.feedbacks);
-
-  // 2) remove filho → pai: evita violar FK ao excluir um registro "pai" ainda referenciado
-  await deleteRemoved('feedbacks', db.feedbacks);
-  await deleteRemoved('avaliacoes', db.avaliacoes);
-  await deleteRemoved('operadores', db.operadores);
-  await deleteRemoved('monitores', db.monitores);
-  await deleteRemoved('requisitos', db.requisitos);
-  await deleteRemoved('carteiras', db.carteiras);
-}
-
-// Atualiza a tela imediatamente (otimista) e sincroniza com o Supabase em segundo plano
-function commit(){
-  flashSync();
-  renderAll();
-  persistDB(DB).then(()=>{
-    flashSynced();
-  }).catch(e=>{
-    console.error('Falha ao sincronizar com o Supabase', e);
-    toast('⚠ Falha ao salvar no banco — verifique sua conexão');
-    flashSyncError();
-  });
-}
-
-function flashSynced(){
-  const dot = document.querySelector('.topbar-sync-dot');
-  const label = document.getElementById('sync-label');
-  if(!dot) return;
-  label.textContent = 'SINCRONIZADO';
-  dot.style.background = '#00c850';
-  dot.style.boxShadow = '0 0 6px #00c850';
-}
-
-function flashSyncError(){
-  const dot = document.querySelector('.topbar-sync-dot');
-  const label = document.getElementById('sync-label');
-  if(!dot) return;
-  label.textContent = 'FALHA AO SINCRONIZAR';
-  dot.style.background = '#ff9900';
-  dot.style.boxShadow = '0 0 6px #ff9900';
-}
-
-function flashSync(){
-  const dot = document.querySelector('.topbar-sync-dot');
-  const label = document.getElementById('sync-label');
-  if(!dot) return;
-  label.textContent = 'SINCRONIZANDO...';
-  dot.style.background = 'var(--neon)';
-  dot.style.boxShadow = '0 0 6px var(--neon)';
-}
-/* ════════════════════════════════════════════════════════════════
-   HELPERS DE DADOS
-════════════════════════════════════════════════════════════════ */
-
-function getCarteira(id){ return DB.carteiras.find(c=>c.id===id); }
-function getOperador(id){ return DB.operadores.find(o=>o.id===id); }
-function getMonitor(id){ return DB.monitores.find(m=>m.id===id); }
-function getRequisitosByCarteira(carteiraId){ return DB.requisitos.filter(r=>r.carteiraId===carteiraId); }
-
-function quadranteOf(score){
-  if(score>=90) return 'A';
-  if(score>=80) return 'B';
-  return 'C';
-}
-
-function avaliacoesDoOperador(operadorId){
-  return DB.avaliacoes.filter(a=>a.operadorId===operadorId).sort((a,b)=> new Date(a.timestamp)-new Date(b.timestamp));
-}
-
-function mediaOperador(operadorId){
-  const avals = avaliacoesDoOperador(operadorId);
-  if(!avals.length) return null;
-  const sum = avals.reduce((s,a)=>s+a.nota,0);
-  return sum/avals.length;
-}
-
-function tendenciaOperador(operadorId){
-  const avals = avaliacoesDoOperador(operadorId);
-  if(avals.length<2) return 0;
-  const last = avals[avals.length-1].nota;
-  const prevAvg = avals.slice(0,-1).reduce((s,a)=>s+a.nota,0) / Math.max(1,avals.length-1);
-  return last - prevAvg;
-}
-
-function isOperadorEmQueda(operadorId){
-  // "pulsar de alerta quase imperceptível": detecta queda consistente recente
-  const avals = avaliacoesDoOperador(operadorId);
-  if(avals.length<3) return false;
-  const recent = avals.slice(-3);
-  return recent[0].nota > recent[1].nota && recent[1].nota > recent[2].nota && (recent[0].nota - recent[2].nota >= 8);
-}
-
-function mediaCarteira(carteiraId){
-  const ops = DB.operadores.filter(o=>o.carteiraId===carteiraId);
-  const medias = ops.map(o=>mediaOperador(o.id)).filter(m=>m!==null);
-  if(!medias.length) return 0;
-  return medias.reduce((s,m)=>s+m,0)/medias.length;
-}
-
-function mediaGeral(){
-  const medias = DB.operadores.map(o=>mediaOperador(o.id)).filter(m=>m!==null);
-  if(!medias.length) return 0;
-  return medias.reduce((s,m)=>s+m,0)/medias.length;
-}
-
-function applyFilters(avals, f){
-  return avals.filter(a=>{
-    if(f.monitorId && a.monitorId!==f.monitorId) return false;
-    if(f.carteiraId && a.carteiraId!==f.carteiraId) return false;
-    if(f.operadorId && a.operadorId!==f.operadorId) return false;
-    if(f.setor && a.setor!==f.setor) return false;
-    if(f.inicio && a.data < f.inicio) return false;
-    if(f.fim && a.data > f.fim) return false;
-    return true;
-  });
-}
-
-function fmtDate(isoDate){
-  if(!isoDate) return '—';
-  const [y,m,d] = isoDate.split('-');
-  return `${d}/${m}/${y}`;
-}
-function fmtDateTime(iso){
-  const d = new Date(iso);
-  return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-}
-function fmtScore(n){ return (Math.round(n*10)/10).toFixed(1); }
-function badgeClassFor(quad){ return quad==='A'?'badge-a':quad==='B'?'badge-b':'badge-c'; }
-function scoreClassFor(quad){ return quad==='A'?'score-a':quad==='B'?'score-b':'score-c'; }
-
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-/* ════════════════════════════════════════════════════════════════
-   FUNDO INTERATIVO — partículas reativas ao cursor + laser
-════════════════════════════════════════════════════════════════ */
-(function(){
-  const canvas = document.getElementById('particles-canvas');
-  const ctx = canvas.getContext('2d');
-  const glowEl = document.getElementById('cursor-glow');
-  let W = canvas.width = window.innerWidth;
-  let H = canvas.height = window.innerHeight;
-
-  const mouse = { x: W/2, y: H/2, active: false };
-  const trail = [];
-  const RADIUS = 150;     // raio de influência do cursor sobre as partículas
-  const LINK_DIST = 118;  // distância máxima para desenhar a linha entre partículas
-  let glowHideTimer = null;
-
-  let particles = [];
-  function spawn(){
-    const count = Math.max(40, Math.min(120, Math.floor((W*H)/15000)));
-    particles = [];
-    for(let i=0;i<count;i++){
-      particles.push({
-        x: Math.random()*W, y: Math.random()*H,
-        r: Math.random()*1.4+0.5,
-        dx: (Math.random()-0.5)*0.25,
-        dy: (Math.random()-0.5)*0.25,
-        baseA: Math.random()*0.35+0.12,
-        red: Math.random()>0.78
-      });
-    }
-  }
-  spawn();
-
-  function setGlow(x,y){
-    document.documentElement.style.setProperty('--mx', x+'px');
-    document.documentElement.style.setProperty('--my', y+'px');
-    glowEl.classList.add('show');
-    clearTimeout(glowHideTimer);
-    glowHideTimer = setTimeout(()=> glowEl.classList.remove('show'), 1800);
-  }
-
-  window.addEventListener('mousemove', e=>{
-    mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
-    trail.push({x:e.clientX, y:e.clientY, life:1});
-    if(trail.length>24) trail.shift();
-    setGlow(e.clientX, e.clientY);
-  }, {passive:true});
-  window.addEventListener('mouseleave', ()=>{ mouse.active = false; });
-  window.addEventListener('touchmove', e=>{
-    if(!e.touches[0]) return;
-    mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; mouse.active = true;
-    setGlow(mouse.x, mouse.y);
-  }, {passive:true});
-
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-
-    /* conexões tipo constelação entre partículas próximas */
-    for(let i=0;i<particles.length;i++){
-      const p = particles[i];
-      for(let j=i+1;j<particles.length;j++){
-        const q = particles[j];
-        const dx = p.x-q.x, dy = p.y-q.y;
-        const d2 = dx*dx+dy*dy;
-        if(d2 < LINK_DIST*LINK_DIST){
-          const d = Math.sqrt(d2);
-          const a = (1 - d/LINK_DIST) * 0.14;
-          ctx.strokeStyle = `rgba(196,18,48,${a})`;
-          ctx.lineWidth = 0.6;
-          ctx.beginPath();
-          ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    /* partículas — brilham e se afastam suavemente perto do cursor */
-    particles.forEach(p=>{
-      let a = p.baseA;
-      if(mouse.active){
-        const dx = p.x-mouse.x, dy = p.y-mouse.y;
-        const d = Math.sqrt(dx*dx+dy*dy) || 1;
-        if(d < RADIUS){
-          const f = 1 - d/RADIUS;
-          p.x += (dx/d) * f * 1.7;
-          p.y += (dy/d) * f * 1.7;
-          a = Math.min(1, p.baseA + f*0.85);
-        }
-      }
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      if(p.red){
-        ctx.shadowBlur = 7; ctx.shadowColor = 'rgba(255,31,68,0.65)';
-        ctx.fillStyle = `rgba(255,31,68,${a})`;
-      } else {
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = `rgba(190,190,200,${a*0.45})`;
-      }
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      p.x += p.dx; p.y += p.dy;
-      if(p.x < -10) p.x = W+10; if(p.x > W+10) p.x = -10;
-      if(p.y < -10) p.y = H+10; if(p.y > H+10) p.y = -10;
-    });
-
-    /* rastro tipo laser seguindo o cursor */
-    if(trail.length > 1){
-      for(let i=1;i<trail.length;i++){
-        const t0 = trail[i-1], t1 = trail[i];
-        const a = (i/trail.length) * 0.55;
-        ctx.strokeStyle = `rgba(255,31,68,${a})`;
-        ctx.lineWidth = (i/trail.length) * 2.2;
-        ctx.shadowBlur = 9;
-        ctx.shadowColor = 'rgba(255,31,68,0.75)';
-        ctx.beginPath();
-        ctx.moveTo(t0.x,t0.y); ctx.lineTo(t1.x,t1.y);
-        ctx.stroke();
-      }
-      ctx.shadowBlur = 0;
-      trail.forEach(t=> t.life -= 0.06);
-      while(trail.length && trail[0].life <= 0) trail.shift();
-    }
-
-    requestAnimationFrame(draw);
-  }
-  draw();
-
-  window.addEventListener('resize', ()=>{
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    spawn();
-  });
-})();
-
-/* ════════════════════════════════════════════════════════════════
-   RELÓGIO
-════════════════════════════════════════════════════════════════ */
-function updateClock(){
-  const now = new Date();
-  const el = document.getElementById('topbar-clock');
-  if(!el) return;
-  el.textContent =
-    String(now.getHours()).padStart(2,'0')+':'+
-    String(now.getMinutes()).padStart(2,'0')+':'+
-    String(now.getSeconds()).padStart(2,'0');
-}
-setInterval(updateClock,1000); updateClock();
-
-/* ════════════════════════════════════════════════════════════════
-   LOGIN / LOGOUT
-════════════════════════════════════════════════════════════════ */
-async function doLogin(){
-  const user = document.getElementById('login-user').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('login-error');
-  errEl.textContent = '';
-
-  if(!user || !pass){ errEl.textContent = '▸ Preencha login e senha'; return; }
-
-  const btn = document.querySelector('.btn-login');
-  const originalLabel = btn ? btn.textContent : '';
-  if(btn){ btn.textContent = 'CONECTANDO...'; btn.disabled = true; }
-  await dbReady;
-  if(btn){ btn.textContent = originalLabel; btn.disabled = false; }
-
-  let sessionUser = null;
-
-  if(user.toLowerCase()==='admin' && pass==='1234'){
-    sessionUser = { role:'adm', name:'Administrador', login:'admin' };
-  } else {
-    const mon = DB.monitores.find(m=>m.login.toLowerCase()===user.toLowerCase() && m.senha===pass);
-    if(mon){
-      sessionUser = { role:'monitor', name:mon.nome, login:mon.login, monitorId:mon.id };
-    }
-  }
-
-  if(!sessionUser){
-    errEl.textContent = '▸ Credenciais inválidas';
-    return;
-  }
-
-  DB.user = sessionUser;
-
-  document.getElementById('login-screen').style.opacity='0';
-  document.getElementById('login-screen').style.transition='opacity 0.5s';
-  setTimeout(()=>{
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    applyRoleVisibility();
-    document.getElementById('topbar-username').textContent = sessionUser.name.toUpperCase();
-    document.getElementById('topbar-role').textContent = sessionUser.role==='adm' ? 'ADMINISTRADOR' : 'MONITOR';
-    populateAllSelects();
-    if(sessionUser.role==='monitor'){
-      navigate('minha-equipe', null);
-    } else {
-      navigate('dashboard', document.querySelector('.nav-item[data-page="dashboard"]'));
-    }
-    renderAll();
-    toast('Sessão iniciada — bem-vindo(a), '+sessionUser.name);
-  },500);
-}
-
-function doLogout(){
-  DB.user = null;
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('login-screen').style.opacity='1';
-  document.getElementById('login-error').textContent='';
-}
-
-function applyRoleVisibility(){
-  const isAdm = DB.user && DB.user.role==='adm';
-  document.querySelectorAll('[data-adm-only="true"]').forEach(el=>{
-    el.style.display = isAdm ? '' : 'none';
-  });
-  // monitor tem sua própria página dedicada; ADM não precisa dela na sidebar
-  const minhaEquipeItem = document.querySelector('.nav-item[data-page="minha-equipe"]');
-  if(minhaEquipeItem) minhaEquipeItem.style.display = isAdm ? 'none' : '';
-}
-
-/* ════════════════════════════════════════════════════════════════
-   NAVEGAÇÃO
-════════════════════════════════════════════════════════════════ */
-function navigate(page, el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const pageEl = document.getElementById('page-'+page);
-  if(pageEl) pageEl.classList.add('active');
-  if(el) el.classList.add('active');
-  else {
-    const navEl = document.querySelector('.nav-item[data-page="'+page+'"]');
-    if(navEl) navEl.classList.add('active');
-  }
-  renderPage(page);
-}
-
-function renderPage(page){
-  switch(page){
-    case 'dashboard': refreshDashboard(); break;
-    case 'avaliacao': /* já populado no login */ break;
-    case 'cadastro': renderCadastro(); break;
-    case 'operadores': renderOperadoresTree(); break;
-    case 'monitores': renderMonitoresPage(); break;
-    case 'minha-equipe': renderMinhaEquipe(); break;
-    case 'quadrantes': refreshQuadrantes(); break;
-    case 'historico': refreshHistorico(); break;
-    case 'exportar': break;
-  }
-}
-
-/* ════════════════════════════════════════════════════════════════
-   TOAST
-════════════════════════════════════════════════════════════════ */
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = '▸ '+msg;
-  t.classList.add('show');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   MODALS
-════════════════════════════════════════════════════════════════ */
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-
-function confirmAction(message, onConfirm){
-  document.getElementById('confirm-message').textContent = message;
-  const btn = document.getElementById('confirm-btn');
-  btn.onclick = ()=>{ closeModal('modal-confirm'); onConfirm(); };
-  openModal('modal-confirm');
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.querySelectorAll('.modal-overlay').forEach(m=>{
-    m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
-  });
-});
-
-/* Keyboard shortcut: Enter on login */
-document.addEventListener('keydown',e=>{
-  const loginScreen = document.getElementById('login-screen');
-  if(e.key==='Enter' && loginScreen && loginScreen.style.display!=='none') doLogin();
-});
-/* ════════════════════════════════════════════════════════════════
-   POPULAR SELECTS DINÂMICOS
-════════════════════════════════════════════════════════════════ */
-
-function optionsHTML(items, valueKey, labelKey, withEmpty, emptyLabel){
-  let html = withEmpty ? `<option value="">${emptyLabel||'Todos'}</option>` : '';
-  items.forEach(it=>{
-    html += `<option value="${escapeHtml(it[valueKey])}">${escapeHtml(it[labelKey])}</option>`;
-  });
-  return html;
-}
-
-function populateAllSelects(){
-  // ── Filtros do Dashboard ──
-  setSelectOptions('f-dash-monitor', DB.monitores.map(m=>({value:m.id,label:m.nome})), 'Todos');
-  setSelectOptions('f-dash-carteira', DB.carteiras.map(c=>({value:c.id,label:c.nome})), 'Todas');
-  setSelectOptions('f-dash-operador', DB.operadores.map(o=>({value:o.id,label:o.nome})), 'Todos');
-
-  // ── Filtros do Histórico ──
-  setSelectOptions('f-hist-operador', DB.operadores.map(o=>({value:o.id,label:o.nome})), 'Todos');
-  setSelectOptions('f-hist-monitor', DB.monitores.map(m=>({value:m.id,label:m.nome})), 'Todos');
-  setSelectOptions('f-hist-carteira', DB.carteiras.map(c=>({value:c.id,label:c.nome})), 'Todas');
-
-  // ── Filtros de Quadrantes ──
-  setSelectOptions('f-quad-setor', DB.setores.map(s=>({value:s,label:s})), 'Todos');
-  setSelectOptions('f-quad-operador', DB.operadores.map(o=>({value:o.id,label:o.nome})), 'Todos');
-
-  // ── Exportação ──
-  setSelectOptions('exp-setor', DB.setores.map(s=>({value:s,label:s})), 'Todos');
-  setSelectOptions('exp-carteira', DB.carteiras.map(c=>({value:c.id,label:c.nome})), 'Todas');
-
-  // ── Formulário de Avaliação ──
-  setSelectOptions('av-setor', DB.setores.map(s=>({value:s,label:s})), null);
-  setSelectOptions('av-monitor', DB.monitores.filter(m=>m.status!=='INATIVO').map(m=>({value:m.id,label:m.nome})), null);
-  onAvSetorChange(); // popula carteira/operador em cascata
-
-  // ── Modal de Operador ──
-  setSelectOptions('op-setor', DB.setores.map(s=>({value:s,label:s})), null);
-  setSelectOptions('op-monitor', DB.monitores.map(m=>({value:m.id,label:m.nome})), null);
-  onOpSetorChangeModal();
-
-  // ── Modal de Carteira ──
-  setSelectOptions('cart-setor', DB.setores.map(s=>({value:s,label:s})), null);
-
-  // ── Modal de Requisito ──
-  setSelectOptions('req-carteira', DB.carteiras.map(c=>({value:c.id,label:c.nome})), null);
-
-  // ── Modal de Monitor (multi-select setores) ──
-  const monSetoresEl = document.getElementById('mon-setores');
-  if(monSetoresEl){
-    monSetoresEl.innerHTML = DB.setores.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
-  }
-}
-
-function setSelectOptions(id, items, emptyLabel){
-  const el = document.getElementById(id);
-  if(!el) return;
-  const prevValue = el.value;
-  let html = emptyLabel!==null ? `<option value="">${emptyLabel}</option>` : '';
-  items.forEach(it=>{ html += `<option value="${escapeHtml(it.value)}">${escapeHtml(it.label)}</option>`; });
-  el.innerHTML = html;
-  if(items.some(it=>String(it.value)===prevValue) || prevValue===''){
-    el.value = prevValue;
-  }
-}
-
-function onAvSetorChange(){
-  const setor = document.getElementById('av-setor').value;
-  const carteiras = DB.carteiras.filter(c=>c.setor===setor);
-  setSelectOptions('av-carteira', carteiras.map(c=>({value:c.id,label:c.nome})), null);
-  onAvCarteiraChange();
-}
-
-function onAvCarteiraChange(){
-  const setor = document.getElementById('av-setor').value;
-  const carteiraId = document.getElementById('av-carteira').value;
-  const ops = DB.operadores.filter(o=>o.setor===setor && o.carteiraId===carteiraId);
-  setSelectOptions('av-operador', ops.map(o=>({value:o.id,label:o.nome})), null);
-  renderCriteriosForm(carteiraId);
-}
-
-function onOpSetorChangeModal(){
-  const setor = document.getElementById('op-setor').value;
-  const carteiras = DB.carteiras.filter(c=>c.setor===setor);
-  setSelectOptions('op-carteira', carteiras.map(c=>({value:c.id,label:c.nome})), null);
-}
-/* ════════════════════════════════════════════════════════════════
-   DASHBOARD
-════════════════════════════════════════════════════════════════ */
-function clearDashFilters(){
-  ['f-dash-monitor','f-dash-carteira','f-dash-operador','f-dash-inicio','f-dash-fim'].forEach(id=>{
-    document.getElementById(id).value='';
-  });
-  refreshDashboard();
-}
-
-function getDashFilters(){
-  return {
-    monitorId: document.getElementById('f-dash-monitor').value,
-    carteiraId: document.getElementById('f-dash-carteira').value,
-    operadorId: document.getElementById('f-dash-operador').value,
-    inicio: document.getElementById('f-dash-inicio').value,
-    fim: document.getElementById('f-dash-fim').value,
-  };
-}
-
-function refreshDashboard(){
-  if(!document.getElementById('page-dashboard')) return;
-  const f = getDashFilters();
-  const avals = applyFilters(DB.avaliacoes, f);
-
-  renderDashboardKPIs(avals, f);
-  renderEvolucaoChart(f);
-  renderCarteiraBars(f);
-  renderRequisitosBars(f);
-  renderAlertList();
-  renderVolumetria(avals);
-}
-
-function peakErrorHour(operadorId){
-  // easter egg: horário (simulado, derivado do id) de maior incidência de pontos críticos
-  const hours = ['09h–11h','11h–13h','14h–16h','16h–18h'];
-  let hash = 0;
-  for(const c of operadorId) hash += c.charCodeAt(0);
-  return hours[hash % hours.length];
-}
-
-function renderDashboardKPIs(avals, f){
-  const mediaGeralFiltrada = avals.length ? avals.reduce((s,a)=>s+a.nota,0)/avals.length : 0;
-  const avaliacoesMes = (()=>{
-    const now = new Date();
-    const ym = now.toISOString().slice(0,7);
-    return DB.avaliacoes.filter(a=>a.data.startsWith(ym)).length;
-  })();
-  const ngcTotal = avals.reduce((s,a)=>s+a.ngc,0);
-  const operadoresAtivos = DB.operadores.length;
-  const totalAvaliacoes = DB.avaliacoes.length;
-  const abaixoMedia = DB.operadores.filter(o=>{
-    const m = mediaOperador(o.id);
-    return m!==null && m < 80;
-  });
-
-  const grid = document.getElementById('kpi-grid');
-  grid.innerHTML = `
-    <div class="kpi-card perf-ok">
-      <div class="easter-insight">📈 Pico: ${peakErrorHour('geral-'+(f.carteiraId||'x'))}</div>
-      <div class="kpi-label">Média Geral</div>
-      <div class="kpi-value">${avals.length ? fmtScore(mediaGeralFiltrada) : '—'}</div>
-      <div class="kpi-sub">${avals.length} avaliação(ões) no filtro</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Avaliações / Mês</div>
-      <div class="kpi-value">${avaliacoesMes}</div>
-      <div class="kpi-sub">mês atual</div>
-    </div>
-    <div class="kpi-card ${ngcTotal>0?'perf-alert':''}">
-      <div class="easter-insight">⚠ ${ngcTotal} ocorrência(s) no filtro</div>
-      <div class="kpi-label">NGC — Graves</div>
-      <div class="kpi-value ${ngcTotal>0?'red':''}">${ngcTotal}</div>
-      <div class="kpi-sub">não conformidades graves</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Operadores Cadastrados</div>
-      <div class="kpi-value">${operadoresAtivos}</div>
-      <div class="kpi-sub">${DB.carteiras.length} carteiras ativas</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Total Avaliações</div>
-      <div class="kpi-value">${totalAvaliacoes}</div>
-      <div class="kpi-sub">desde o início</div>
-    </div>
-    <div class="kpi-card ${abaixoMedia.length>0?'perf-alert':''}">
-      <div class="easter-insight">🎯 ${DB.feedbacks.length} feedback(s) registrados</div>
-      <div class="kpi-label">Abaixo da Média</div>
-      <div class="kpi-value ${abaixoMedia.length>0?'red':''}">${abaixoMedia.length}</div>
-      <div class="kpi-sub">operadores em alerta (&lt;80)</div>
-    </div>
-  `;
-}
-
-function renderEvolucaoChart(f){
-  const canvas = document.getElementById('chart-evolucao');
-  if(!canvas || typeof Chart==='undefined') return;
-  if(window._evoChart) window._evoChart.destroy();
-
-  const months = [];
-  const now = new Date();
-  for(let i=5;i>=0;i--){
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    months.push(d.toISOString().slice(0,7));
-  }
-  const carteirasToShow = f.carteiraId ? DB.carteiras.filter(c=>c.id===f.carteiraId) : DB.carteiras;
-  const colors = ['#c41230','#ff1f44','#420a16','#ff4d63'];
-
-  const datasets = carteirasToShow.map((cart,idx)=>{
-    const data = months.map(ym=>{
-      const avals = DB.avaliacoes.filter(a=>a.carteiraId===cart.id && a.data.startsWith(ym));
-      if(!avals.length) return null;
-      return Math.round((avals.reduce((s,a)=>s+a.nota,0)/avals.length)*10)/10;
-    });
-    return {
-      label: cart.nome,
-      data,
-      borderColor: colors[idx%colors.length],
-      backgroundColor: idx===0 ? 'rgba(196,18,48,0.05)' : 'transparent',
-      tension:0.4, pointRadius:4, fill: idx===0, spanGaps:true
-    };
-  });
-
-  window._evoChart = new Chart(canvas.getContext('2d'),{
-    type:'line',
-    data:{ labels: months.map(ym=>{ const [y,m]=ym.split('-'); return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(m)-1]; }), datasets },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:'#666',font:{size:11}}}},
-      scales:{
-        x:{ticks:{color:'#555'},grid:{color:'rgba(255,255,255,0.03)'}},
-        y:{min:50,max:100,ticks:{color:'#555'},grid:{color:'rgba(255,255,255,0.03)'}}
-      }
-    }
-  });
-}
-
-function renderCarteiraBars(f){
-  const container = document.getElementById('chart-carteira-bars');
-  if(!container) return;
-  const carteiras = f.carteiraId ? DB.carteiras.filter(c=>c.id===f.carteiraId) : DB.carteiras;
-  container.innerHTML = carteiras.map(c=>{
-    const media = mediaCarteira(c.id);
-    return `
-      <div class="chart-bar-item">
-        <span class="chart-bar-label">${escapeHtml(c.nome)}</span>
-        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.min(100,media)}%"></div></div>
-        <span class="chart-bar-val">${fmtScore(media)}</span>
-      </div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-text">Sem dados</div></div>`;
-}
-
-function renderRequisitosBars(f){
-  const container = document.getElementById('chart-requisitos-bars');
-  if(!container) return;
-  // Como não temos pontuação por requisito persistida nas avaliações geradas,
-  // derivamos um índice de conformidade estável a partir do peso e do histórico de NGC.
-  const reqs = f.carteiraId ? getRequisitosByCarteira(f.carteiraId) : DB.requisitos.slice(0,8);
-  const ngcRate = (()=>{
-    const avals = f.carteiraId ? DB.avaliacoes.filter(a=>a.carteiraId===f.carteiraId) : DB.avaliacoes;
-    if(!avals.length) return 0;
-    return avals.reduce((s,a)=>s+a.ngc,0)/avals.length;
-  })();
-  container.innerHTML = reqs.slice(0,6).map(r=>{
-    let hash=0; for(const c of r.id) hash+=c.charCodeAt(0);
-    const base = r.ngc ? Math.round((1-ngcRate)*100) : 75 + (hash%22);
-    const pct = Math.max(40,Math.min(99,base));
-    return `
-      <div class="chart-bar-item">
-        <span class="chart-bar-label">${escapeHtml(r.nome)}</span>
-        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%"></div></div>
-        <span class="chart-bar-val">${pct}%</span>
-      </div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-text">Sem requisitos cadastrados</div></div>`;
-}
-
-function renderAlertList(){
-  const container = document.getElementById('alert-list');
-  if(!container) return;
-  const alerts = DB.operadores.map(o=>({op:o, media:mediaOperador(o.id)}))
-    .filter(x=>x.media!==null && x.media<80)
-    .sort((a,b)=>a.media-b.media)
-    .slice(0,6);
-
-  container.innerHTML = alerts.map(({op,media})=>{
-    const cart = getCarteira(op.carteiraId);
-    return `
-      <div class="alert-row" onclick="openOpDetail('${op.id}')">
-        <span class="alert-icon">⚠</span>
-        <span class="alert-name">${escapeHtml(op.nome)}</span>
-        <span class="badge badge-c">${cart ? escapeHtml(cart.nome.toUpperCase()) : '—'}</span>
-        <span class="alert-score">${fmtScore(media)}</span>
-      </div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">Nenhum operador abaixo da média</div></div>`;
-}
-
-function renderVolumetria(avals){
-  // por monitor
-  const byMonitor = {};
-  avals.forEach(a=>{ byMonitor[a.monitorId]=(byMonitor[a.monitorId]||0)+1; });
-  const monEntries = Object.entries(byMonitor).sort((a,b)=>b[1]-a[1]);
-  const monMax = Math.max(1, ...monEntries.map(e=>e[1]));
-  document.getElementById('vol-monitor-bars').innerHTML = monEntries.map(([mid,count])=>{
-    const mon = getMonitor(mid);
-    return `<div class="chart-bar-item"><span class="chart-bar-label">${mon?escapeHtml(mon.nome):'—'}</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(count/monMax)*100}%"></div></div><span class="chart-bar-val">${count}</span></div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-text">Sem dados</div></div>`;
-
-  // por carteira
-  const byCart = {};
-  avals.forEach(a=>{ byCart[a.carteiraId]=(byCart[a.carteiraId]||0)+1; });
-  const cartEntries = Object.entries(byCart).sort((a,b)=>b[1]-a[1]);
-  const cartMax = Math.max(1, ...cartEntries.map(e=>e[1]));
-  document.getElementById('vol-carteira-bars').innerHTML = cartEntries.map(([cid,count])=>{
-    const cart = getCarteira(cid);
-    return `<div class="chart-bar-item"><span class="chart-bar-label">${cart?escapeHtml(cart.nome):'—'}</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(count/cartMax)*100}%"></div></div><span class="chart-bar-val">${count}</span></div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-text">Sem dados</div></div>`;
-
-  // ranking top 5
-  const ranking = DB.operadores.map(o=>({op:o, media:mediaOperador(o.id)}))
-    .filter(x=>x.media!==null)
-    .sort((a,b)=>b.media-a.media)
-    .slice(0,5);
-  document.getElementById('ranking-table').querySelector('tbody').innerHTML = ranking.map((x,i)=>{
-    const quad = quadranteOf(x.media);
-    return `<tr><td style="padding:6px 8px">#${i+1}</td><td style="padding:6px 8px">${escapeHtml(x.op.nome)}</td><td style="padding:6px 8px"><span class="badge ${badgeClassFor(quad)}">${fmtScore(x.media)}</span></td></tr>`;
-  }).join('') || `<tr><td class="data-table-empty">Sem dados</td></tr>`;
-}
-/* ════════════════════════════════════════════════════════════════
-   AVALIAÇÃO
-════════════════════════════════════════════════════════════════ */
-function renderCriteriosForm(carteiraId){
-  const container = document.getElementById('criterios-container');
-  if(!container) return;
-  const reqs = getRequisitosByCarteira(carteiraId);
-  if(!reqs.length){
-    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-text">Selecione setor/carteira com requisitos cadastrados</div></div>`;
-    document.getElementById('total-score').textContent='0';
-    return;
-  }
-  const half = Math.ceil(reqs.length/2);
-  const col1 = reqs.slice(0,half), col2 = reqs.slice(half);
-  const renderCol = (list)=> list.map(r=>`
-    <div class="score-input-row" data-req-id="${r.id}" data-req-peso="${r.peso}" data-req-ngc="${r.ngc?1:0}">
-      <span class="score-input-label">${escapeHtml(r.nome)}</span>
-      ${r.ngc ? `<div class="score-ngc"><input type="checkbox" class="score-ngc-check" oninput="calcTotal()" /><label style="font-size:10px;color:var(--text-dim)">NGC</label></div>` : ''}
-      <input type="number" class="score-input" min="0" max="${r.peso}" value="${r.peso}" oninput="calcTotal()" />
-    </div>`).join('');
-  container.innerHTML = `<div>${renderCol(col1)}</div><div>${renderCol(col2)}</div>`;
-  calcTotal();
-}
-
-function calcTotal(){
-  const rows = document.querySelectorAll('#criterios-container .score-input-row');
-  let sum=0, max=0, hasNGC=false;
-  rows.forEach(row=>{
-    const peso = parseFloat(row.dataset.reqPeso)||0;
-    const isNgcReq = row.dataset.reqNgc==='1';
-    const input = row.querySelector('.score-input');
-    const check = row.querySelector('.score-ngc-check');
-    max += peso;
-    if(isNgcReq && check && check.checked){ hasNGC = true; return; }
-    sum += Math.min(peso, parseFloat(input.value)||0);
-  });
-  let score = hasNGC ? 0 : (max>0 ? Math.round((sum/max)*100) : 0);
-  score = Math.max(0, Math.min(100, score));
-
-  const scoreEl = document.getElementById('total-score');
-  const barEl = document.getElementById('total-bar');
-  const badgeEl = document.getElementById('total-badge');
-  if(!scoreEl) return;
-  scoreEl.textContent = score;
-  barEl.style.width = score+'%';
-  barEl.className = 'progress-fill '+(score>=90?'green':score>=80?'amber':'red-bar');
-  const quad = quadranteOf(score);
-  badgeEl.textContent = 'QUAD '+quad;
-  badgeEl.className = `badge ${badgeClassFor(quad)}`;
-  return { score, hasNGC };
-}
-
-function resetAvaliacaoForm(){
-  document.getElementById('av-data').value='';
-  document.getElementById('av-telefone').value='';
-  document.getElementById('av-pontos-criticos').value='';
-  document.getElementById('av-pontos-positivos').value='';
-  document.getElementById('ai-text-input').value='';
-  document.getElementById('ai-result').style.display='none';
-  onAvSetorChange();
-}
-
-function saveAvaliacao(){
-  const setor = document.getElementById('av-setor').value;
-  const carteiraId = document.getElementById('av-carteira').value;
-  const operadorId = document.getElementById('av-operador').value;
-  const monitorId = document.getElementById('av-monitor').value;
-  const data = document.getElementById('av-data').value || new Date().toISOString().slice(0,10);
-
-  if(!operadorId){ toast('⚠ Selecione um operador antes de salvar'); return; }
-  if(!monitorId){ toast('⚠ Selecione o monitor responsável'); return; }
-
-  const { score, hasNGC } = calcTotal();
-
-  const avaliacao = {
-    id: uid('av'),
-    data,
-    timestamp: new Date().toISOString(),
-    telefone: document.getElementById('av-telefone').value,
-    setor,
-    carteiraId,
-    operadorId,
-    monitorId,
-    nota: score,
-    ngc: hasNGC ? 1 : 0,
-    pontosCriticos: document.getElementById('av-pontos-criticos').value,
-    pontosPositivos: document.getElementById('av-pontos-positivos').value,
-  };
-
-  DB.avaliacoes.unshift(avaliacao);
-  commit();
-  toast('Avaliação salva — nota: '+score+(hasNGC?' (NGC — zerada)':''));
-  resetAvaliacaoForm();
-}
-
-/* ── IA (simulada localmente — sem chamada externa) ── */
-function runAIAnalysis(){
-  const txt = document.getElementById('ai-text-input').value;
-  const result = document.getElementById('ai-result');
-  if(!txt.trim()){ toast('⚠ Cole o texto/resumo da ligação antes de analisar'); return; }
-  result.style.display='block';
-  result.textContent = 'ANALISANDO...';
-  const msgs = [
-    'NEXUS-AI // Processando transcrição...',
-    'Identificando requisitos de qualidade...',
-    'Checando conformidade BACEN...',
-    'Calculando nota estimada...',
-  ];
-  let i=0;
-  const iv = setInterval(()=>{
-    result.textContent = msgs[i] || msgs[msgs.length-1];
-    i++;
-    if(i>=msgs.length){
-      clearInterval(iv);
-      const lengthFactor = Math.min(1, txt.length/300);
-      const nota = Math.round(72 + lengthFactor*22 + (Math.random()*6-3));
-      const notaClamped = Math.max(50,Math.min(100,nota));
-      result.innerHTML = `NEXUS-AI // Análise concluída
-
-NOTA ESTIMADA: <span style="font-size:18px;color:var(--neon)">${notaClamped}</span>/100
-
-✓ Identificação: DETECTADA
-✓ Oferta de acordo: ${notaClamped>78?'DETECTADA':'NÃO IDENTIFICADA'}
-${notaClamped>85?'✓':'⚠'} Encerramento: ${notaClamped>85?'CONFORME':'PARCIALMENTE CONFORME'}
-✓ Linguagem: ADEQUADA
-
-Sugestão: revise os critérios manualmente antes de salvar — esta é uma estimativa.`;
-      // sugere preencher critérios proporcionalmente
-      suggestCriteriaFromScore(notaClamped);
-    }
-  },500);
-}
-
-function suggestCriteriaFromScore(score){
-  const rows = document.querySelectorAll('#criterios-container .score-input-row');
-  rows.forEach(row=>{
-    const peso = parseFloat(row.dataset.reqPeso)||0;
-    const input = row.querySelector('.score-input');
-    const suggested = Math.round(peso * (score/100));
-    input.value = Math.max(0, Math.min(peso, suggested));
-  });
-  calcTotal();
-}
-
-function handleAudioUpload(input){
-  if(input.files[0]){
-    toast('Áudio recebido — iniciando transcrição: '+input.files[0].name);
-    setTimeout(()=>{
-      const ta = document.getElementById('ai-text-input');
-      ta.value = '[Transcrição simulada] Atendimento iniciado com identificação do operador e do cliente. Foi apresentado o valor da dívida e oferecida proposta de acordo. Encerramento realizado conforme protocolo padrão.';
-      toast('Transcrição concluída — revise o texto gerado');
-    },2200);
-  }
-}
-/* ════════════════════════════════════════════════════════════════
-   CADASTRO — Monitores, Carteiras, Requisitos
-════════════════════════════════════════════════════════════════ */
-function renderCadastro(){
-  renderMonitoresTable();
-  renderCarteirasTable();
-  renderRequisitosTable();
-}
-
-function renderMonitoresTable(){
-  const tbody = document.getElementById('monitores-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = DB.monitores.map(m=>{
-    const count = DB.avaliacoes.filter(a=>a.monitorId===m.id).length;
-    return `
-      <tr>
-        <td>${escapeHtml(m.nome)}</td>
-        <td><span style="font-family:var(--font-mono);color:var(--red)">${escapeHtml(m.login)}</span></td>
-        <td>${escapeHtml(m.setores.join(', '))}</td>
-        <td>${count}</td>
-        <td><span class="badge ${m.status==='ATIVO'?'badge-a':m.status==='FÉRIAS'?'badge-b':'badge-c'}">${m.status}</span></td>
-        <td style="display:flex;gap:6px;">
-          <button class="btn btn-sm" onclick="openMonitorModal('${m.id}')">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteMonitor('${m.id}')">✕</button>
-        </td>
-      </tr>`;
-  }).join('') || `<tr><td colspan="6" class="data-table-empty">Nenhum monitor cadastrado</td></tr>`;
-}
-
-function renderCarteirasTable(){
-  const tbody = document.getElementById('carteiras-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = DB.carteiras.map(c=>{
-    const reqCount = getRequisitosByCarteira(c.id).length;
-    const opCount = DB.operadores.filter(o=>o.carteiraId===c.id).length;
-    const media = mediaCarteira(c.id);
-    return `
-      <tr>
-        <td>${escapeHtml(c.nome)}</td>
-        <td>${escapeHtml(c.setor)}</td>
-        <td>${reqCount} requisito(s)</td>
-        <td>${opCount} ops</td>
-        <td><span class="badge ${badgeClassFor(quadranteOf(media))}">${media?fmtScore(media):'—'}</span></td>
-        <td style="display:flex;gap:6px;">
-          <button class="btn btn-sm" onclick="openCarteiraModal('${c.id}')">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteCarteira('${c.id}')">✕</button>
-        </td>
-      </tr>`;
-  }).join('') || `<tr><td colspan="6" class="data-table-empty">Nenhuma carteira cadastrada</td></tr>`;
-}
-
-function renderRequisitosTable(){
-  const tbody = document.getElementById('requisitos-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = DB.requisitos.map(r=>{
-    const cart = getCarteira(r.carteiraId);
-    return `
-      <tr>
-        <td>${escapeHtml(r.nome)}</td>
-        <td>${cart?escapeHtml(cart.nome):'—'}</td>
-        <td>${r.peso} pts</td>
-        <td>${r.ngc ? '<span class="badge badge-ngc">SIM</span>' : '—'}</td>
-        <td style="display:flex;gap:6px;">
-          <button class="btn btn-sm" onclick="openRequisitoModal('${r.id}')">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteRequisito('${r.id}')">✕</button>
-        </td>
-      </tr>`;
-  }).join('') || `<tr><td colspan="5" class="data-table-empty">Nenhum requisito cadastrado</td></tr>`;
-}
-
-/* ── Monitor ── */
-function openMonitorModal(id){
-  document.getElementById('mon-edit-id').value = id||'';
-  document.getElementById('modal-monitor-title').textContent = id ? 'Editar Monitor' : 'Novo Monitor';
-  const setoresEl = document.getElementById('mon-setores');
-  Array.from(setoresEl.options).forEach(o=>o.selected=false);
-  if(id){
-    const m = getMonitor(id);
-    document.getElementById('mon-nome').value = m.nome;
-    document.getElementById('mon-login').value = m.login;
-    document.getElementById('mon-senha').value = m.senha;
-    document.getElementById('mon-status').value = m.status;
-    Array.from(setoresEl.options).forEach(o=>{ if(m.setores.includes(o.value)) o.selected=true; });
-  } else {
-    document.getElementById('mon-nome').value='';
-    document.getElementById('mon-login').value='';
-    document.getElementById('mon-senha').value='';
-    document.getElementById('mon-status').value='ATIVO';
-  }
-  openModal('modal-monitor');
-}
-
-function saveMonitor(){
-  const id = document.getElementById('mon-edit-id').value;
-  const nome = document.getElementById('mon-nome').value.trim();
-  const login = document.getElementById('mon-login').value.trim();
-  const senha = document.getElementById('mon-senha').value;
-  const status = document.getElementById('mon-status').value;
-  const setores = Array.from(document.getElementById('mon-setores').selectedOptions).map(o=>o.value);
-
-  if(!nome || !login || !senha){ toast('⚠ Preencha nome, login e senha'); return; }
-  if(!setores.length){ toast('⚠ Selecione ao menos um setor'); return; }
-
-  const loginTaken = DB.monitores.some(m=>m.login.toLowerCase()===login.toLowerCase() && m.id!==id);
-  if(loginTaken){ toast('⚠ Este login já está em uso'); return; }
-
-  if(id){
-    const m = getMonitor(id);
-    Object.assign(m, { nome, login, senha, status, setores });
-    toast('Monitor atualizado: '+nome);
-  } else {
-    DB.monitores.push({ id: uid('mon'), nome, login, senha, status, setores });
-    toast('Monitor criado: '+nome);
-  }
-  closeModal('modal-monitor');
-  commit();
-}
-
-function deleteMonitor(id){
-  const m = getMonitor(id);
-  confirmAction(`Excluir o monitor "${m.nome}"? Avaliações já registradas serão mantidas no histórico.`, ()=>{
-    DB.monitores = DB.monitores.filter(x=>x.id!==id);
-    // mantém operadores/avaliações no histórico, só desvincula do monitor removido
-    DB.operadores.forEach(o=>{ if(o.monitorId===id) o.monitorId = null; });
-    DB.avaliacoes.forEach(a=>{ if(a.monitorId===id) a.monitorId = null; });
-    commit();
-    toast('Monitor excluído');
-  });
-}
-
-/* ── Carteira ── */
-function openCarteiraModal(id){
-  document.getElementById('cart-edit-id').value = id||'';
-  document.getElementById('modal-carteira-title').textContent = id ? 'Editar Carteira' : 'Nova Carteira';
-  if(id){
-    const c = getCarteira(id);
-    document.getElementById('cart-nome').value = c.nome;
-    document.getElementById('cart-setor').value = c.setor;
-    document.getElementById('cart-desc').value = c.descricao||'';
-  } else {
-    document.getElementById('cart-nome').value='';
-    document.getElementById('cart-desc').value='';
-  }
-  openModal('modal-carteira');
-}
-
-function saveCarteira(){
-  const id = document.getElementById('cart-edit-id').value;
-  const nome = document.getElementById('cart-nome').value.trim();
-  const setor = document.getElementById('cart-setor').value;
-  const descricao = document.getElementById('cart-desc').value.trim();
-  if(!nome){ toast('⚠ Informe o nome da carteira'); return; }
-
-  if(id){
-    Object.assign(getCarteira(id), { nome, setor, descricao });
-    toast('Carteira atualizada: '+nome);
-  } else {
-    DB.carteiras.push({ id: uid('cart'), nome, setor, descricao });
-    toast('Carteira criada: '+nome);
-  }
-  closeModal('modal-carteira');
-  commit();
-}
-
-function deleteCarteira(id){
-  const c = getCarteira(id);
-  const hasOps = DB.operadores.some(o=>o.carteiraId===id);
-  if(hasOps){ toast('⚠ Não é possível excluir: há operadores nesta carteira'); return; }
-  confirmAction(`Excluir a carteira "${c.nome}"? Os requisitos vinculados também serão removidos.`, ()=>{
-    DB.carteiras = DB.carteiras.filter(x=>x.id!==id);
-    DB.requisitos = DB.requisitos.filter(r=>r.carteiraId!==id);
-    commit();
-    toast('Carteira excluída');
-  });
-}
-
-/* ── Requisito ── */
-function openRequisitoModal(id){
-  document.getElementById('req-edit-id').value = id||'';
-  document.getElementById('modal-requisito-title').textContent = id ? 'Editar Requisito' : 'Novo Requisito';
-  if(id){
-    const r = DB.requisitos.find(x=>x.id===id);
-    document.getElementById('req-nome').value = r.nome;
-    document.getElementById('req-carteira').value = r.carteiraId;
-    document.getElementById('req-peso').value = r.peso;
-    document.getElementById('req-ngc').value = r.ngc ? 'sim':'nao';
-  } else {
-    document.getElementById('req-nome').value='';
-    document.getElementById('req-peso').value=10;
-    document.getElementById('req-ngc').value='nao';
-  }
-  openModal('modal-requisito');
-}
-
-function saveRequisito(){
-  const id = document.getElementById('req-edit-id').value;
-  const nome = document.getElementById('req-nome').value.trim();
-  const carteiraId = document.getElementById('req-carteira').value;
-  const peso = parseFloat(document.getElementById('req-peso').value)||10;
-  const ngc = document.getElementById('req-ngc').value==='sim';
-  if(!nome){ toast('⚠ Informe o nome do requisito'); return; }
-  if(!carteiraId){ toast('⚠ Selecione a carteira'); return; }
-
-  if(id){
-    Object.assign(DB.requisitos.find(x=>x.id===id), { nome, carteiraId, peso, ngc });
-    toast('Requisito atualizado: '+nome);
-  } else {
-    DB.requisitos.push({ id: uid('req'), nome, carteiraId, peso, ngc });
-    toast('Requisito criado: '+nome);
-  }
-  closeModal('modal-requisito');
-  commit();
-}
-
-function deleteRequisito(id){
-  confirmAction('Excluir este requisito de qualidade?', ()=>{
-    DB.requisitos = DB.requisitos.filter(x=>x.id!==id);
-    commit();
-    toast('Requisito excluído');
-  });
-}
-/* ════════════════════════════════════════════════════════════════
-   OPERADORES — Árvore Setor > Operadores
-════════════════════════════════════════════════════════════════ */
-function renderOperadoresTree(){
-  const container = document.getElementById('operadores-tree');
-  if(!container) return;
-  const isMonitor = DB.user && DB.user.role==='monitor';
-  const meusSetores = isMonitor ? getMonitor(DB.user.monitorId).setores : null;
-
-  const setoresToShow = meusSetores ? DB.setores.filter(s=>meusSetores.includes(s)) : DB.setores;
-
-  container.innerHTML = setoresToShow.map(setor=>{
-    const ops = DB.operadores.filter(o=>o.setor===setor);
-    if(!ops.length) return '';
-    const medias = ops.map(o=>mediaOperador(o.id)).filter(m=>m!==null);
-    const mediaSetor = medias.length ? medias.reduce((s,m)=>s+m,0)/medias.length : 0;
-    const treeId = 'tree-'+setor.toLowerCase().replace(/[^a-z]/g,'');
-    const cardsHTML = ops.map(op=>opCardHTML(op)).join('');
-    return `
-      <div class="tree-section">
-        <div class="tree-sector" onclick="toggleTree('${treeId}', this)">
-          <span class="tree-arrow" style="color:var(--neon)">▸</span>
-          <span>${escapeHtml(setor.toUpperCase())}</span>
-          <span class="badge ${badgeClassFor(quadranteOf(mediaSetor))}" style="margin-left:auto">${ops.length} ops</span>
-          <span class="badge" style="border-color:var(--border2)">Média: ${mediaSetor?fmtScore(mediaSetor):'—'}</span>
-        </div>
-        <div class="tree-ops open" id="${treeId}">
-          <div style="padding:8px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding-left:4px;">
-            ${cardsHTML}
-          </div>
-        </div>
-      </div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-icon">◉</div><div class="empty-state-text">Nenhum operador cadastrado neste escopo</div></div>`;
-}
-
-function opCardHTML(op){
-  const media = mediaOperador(op.id);
-  const quad = media!==null ? quadranteOf(media) : 'C';
-  const tendencia = tendenciaOperador(op.id);
-  const emQueda = isOperadorEmQueda(op.id);
-  const count = avaliacoesDoOperador(op.id).length;
-  const arrow = tendencia>0.3 ? `↑ ${fmtScore(Math.abs(tendencia))}` : tendencia<-0.3 ? `↓ ${fmtScore(Math.abs(tendencia))}` : '— estável';
-  return `
-    <div class="op-card ${emQueda?'perf-alert-strong':(quad==='C'?'perf-alert':'')}" onclick="openOpDetail('${op.id}')">
-      <div class="score-circle ${scoreClassFor(quad)}">${media!==null?Math.round(media):'—'}</div>
-      <div class="op-card-info">
-        <div class="op-card-name">${escapeHtml(op.nome)}</div>
-        <div class="op-card-meta">${escapeHtml(op.setor)} · ${count} avaliações · ${arrow}</div>
-      </div>
-      <span class="badge ${badgeClassFor(quad)}">${quad}</span>
-    </div>`;
-}
-
-function toggleTree(id, sectorEl){
-  const el = document.getElementById(id);
-  el.classList.toggle('open');
-  if(sectorEl) sectorEl.classList.toggle('open');
-}
-
-/* ── Operador CRUD ── */
-function openOperadorModal(id){
-  document.getElementById('op-edit-id').value = id||'';
-  document.getElementById('modal-operador-title').textContent = id ? 'Editar Operador' : 'Novo Operador';
-  if(id){
-    const o = getOperador(id);
-    document.getElementById('op-nome').value = o.nome;
-    document.getElementById('op-matricula').value = o.matricula;
-    document.getElementById('op-setor').value = o.setor;
-    onOpSetorChangeModal();
-    document.getElementById('op-carteira').value = o.carteiraId;
-    document.getElementById('op-admissao').value = o.admissao||'';
-    document.getElementById('op-monitor').value = o.monitorId;
-  } else {
-    document.getElementById('op-nome').value='';
-    document.getElementById('op-matricula').value='';
-    document.getElementById('op-admissao').value='';
-    onOpSetorChangeModal();
-  }
-  openModal('modal-operador');
-}
-
-function saveOperador(){
-  const id = document.getElementById('op-edit-id').value;
-  const nome = document.getElementById('op-nome').value.trim();
-  const matricula = document.getElementById('op-matricula').value.trim();
-  const setor = document.getElementById('op-setor').value;
-  const carteiraId = document.getElementById('op-carteira').value;
-  const admissao = document.getElementById('op-admissao').value;
-  const monitorId = document.getElementById('op-monitor').value;
-
-  if(!nome){ toast('⚠ Informe o nome do operador'); return; }
-  if(!carteiraId){ toast('⚠ Selecione a carteira'); return; }
-  if(!monitorId){ toast('⚠ Selecione o monitor responsável'); return; }
-
-  if(id){
-    Object.assign(getOperador(id), { nome, matricula, setor, carteiraId, admissao, monitorId });
-    toast('Operador atualizado: '+nome);
-  } else {
-    DB.operadores.push({ id: uid('opx'), nome, matricula, setor, carteiraId, admissao, monitorId });
-    toast('Operador cadastrado: '+nome);
-  }
-  closeModal('modal-operador');
-  commit();
-}
-
-/* ── Detalhe do Operador + Feedback ── */
-function openOpDetail(operadorId){
-  const op = getOperador(operadorId);
-  if(!op) return;
-  const media = mediaOperador(operadorId);
-  const quad = media!==null ? quadranteOf(media) : 'C';
-
-  document.getElementById('op-detail-id').value = operadorId;
-  document.getElementById('op-detail-name').textContent = op.nome;
-  document.getElementById('op-detail-name').classList.add('decode-in');
-  document.getElementById('op-detail-setor').textContent = op.setor;
-  document.getElementById('op-detail-count').textContent = avaliacoesDoOperador(operadorId).length;
-
-  const qBadge = document.getElementById('op-detail-quad');
-  qBadge.textContent = 'Quad '+quad;
-  qBadge.className = `badge ${badgeClassFor(quad)}`;
-
-  const circle = document.getElementById('op-detail-circle');
-  circle.textContent = media!==null ? Math.round(media) : '—';
-  circle.className = `score-circle ${scoreClassFor(quad)}`;
-
-  document.getElementById('op-pontos-melhoria').value='';
-  document.getElementById('op-plano-acao').value='';
-  document.getElementById('op-feedback-formal').value='';
-
-  renderFeedbackHistory(operadorId);
-  openModal('modal-op-detail');
-
-  setTimeout(()=>{
-    const canvas = document.getElementById('chart-op-detail');
-    if(!canvas || typeof Chart==='undefined') return;
-    if(window._opChart) window._opChart.destroy();
-    const avals = avaliacoesDoOperador(operadorId).slice(-10);
-    const labels = avals.map(a=>fmtDate(a.data));
-    const data = avals.map(a=>a.nota);
-    window._opChart = new Chart(canvas.getContext('2d'),{
-      type:'line',
-      data:{labels,datasets:[{
-        label:'Nota',data,
-        borderColor:'#c41230',backgroundColor:'rgba(196,18,48,0.06)',
-        tension:0.4,pointBackgroundColor:'#c41230',pointRadius:4,fill:true
-      }]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#666',font:{size:9}},grid:{color:'#111'}},y:{min:40,max:100,ticks:{color:'#666'},grid:{color:'#111'}}}}
-    });
-  },100);
-}
-
-function renderFeedbackHistory(operadorId){
-  const container = document.getElementById('op-feedback-history');
-  const fbs = DB.feedbacks.filter(f=>f.operadorId===operadorId).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
-  if(!fbs.length){
-    container.innerHTML = `<div class="empty-state" style="padding:16px;"><div class="empty-state-text">Nenhum feedback registrado ainda</div></div>`;
-    return;
-  }
-  container.innerHTML = fbs.map(f=>`
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-content">
-        <div class="timeline-title">${escapeHtml(f.feedbackFormal || f.pontosMelhoria || 'Feedback registrado')}</div>
-        <div class="timeline-time">${fmtDateTime(f.timestamp)} · por ${escapeHtml(f.autor)}</div>
-      </div>
-    </div>`).join('');
-}
-
-function saveOpFeedback(){
-  const operadorId = document.getElementById('op-detail-id').value;
-  const pontosMelhoria = document.getElementById('op-pontos-melhoria').value.trim();
-  const planoAcao = document.getElementById('op-plano-acao').value.trim();
-  const feedbackFormal = document.getElementById('op-feedback-formal').value.trim();
-
-  if(!pontosMelhoria && !planoAcao && !feedbackFormal){
-    toast('⚠ Preencha ao menos um campo para registrar');
-    return;
-  }
-
-  DB.feedbacks.push({
-    id: uid('fb'),
-    operadorId,
-    pontosMelhoria,
-    planoAcao,
-    feedbackFormal,
-    autor: DB.user ? DB.user.name : 'Sistema',
-    timestamp: new Date().toISOString(),
-  });
-  commit();
-  toast('Feedback registrado com sucesso');
-  renderFeedbackHistory(operadorId);
-  document.getElementById('op-pontos-melhoria').value='';
-  document.getElementById('op-plano-acao').value='';
-  document.getElementById('op-feedback-formal').value='';
-}
-/* ════════════════════════════════════════════════════════════════
-   VISÃO MONITORES (ADM)
-════════════════════════════════════════════════════════════════ */
-function renderMonitoresPage(){
-  const kpiEl = document.getElementById('monitores-kpi');
-  const cardsEl = document.getElementById('monitores-cards');
-  if(!kpiEl || !cardsEl) return;
-
-  const totalAvals = DB.avaliacoes.length;
-  const mediaGeralVal = mediaGeral();
-  const ultimaAval = DB.avaliacoes[0];
-
-  kpiEl.innerHTML = `
-    <div class="kpi-card"><div class="kpi-label">Total Monitores</div><div class="kpi-value">${DB.monitores.length}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Total Avaliações</div><div class="kpi-value">${totalAvals}</div><div class="kpi-sub">todos os períodos</div></div>
-    <div class="kpi-card"><div class="kpi-label">Média Geral Aplicada</div><div class="kpi-value">${fmtScore(mediaGeralVal)}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Última Avaliação</div><div class="kpi-value" style="font-size:16px;">${ultimaAval?fmtDateTime(ultimaAval.timestamp).split(' ')[0]:'—'}</div><div class="kpi-sub">${ultimaAval?fmtDateTime(ultimaAval.timestamp).split(' ')[1]||'':''}</div></div>
-  `;
-
-  cardsEl.innerHTML = DB.monitores.map(m=>{
-    const avals = DB.avaliacoes.filter(a=>a.monitorId===m.id);
-    const media = avals.length ? avals.reduce((s,a)=>s+a.nota,0)/avals.length : 0;
-    const quad = avals.length ? quadranteOf(media) : 'B';
-    const ultima = avals.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))[0];
-    const totalOps = DB.operadores.filter(o=>o.monitorId===m.id).length;
-    const pct = Math.min(100, avals.length);
-    return `
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">${escapeHtml(m.nome)}</div>
-            <div style="font-size:11px;color:var(--text-dim);">${escapeHtml(m.setores.join(' · '))}</div>
-          </div>
-          <div class="score-circle ${scoreClassFor(quad)}">${quad}</div>
-        </div>
-        <div style="margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:6px;"><span>Avaliações realizadas</span><span style="color:var(--text)">${avals.length}</span></div>
-          <div class="progress-wrap"><div class="progress-fill ${quad==='A'?'green':quad==='B'?'amber':'red-bar'}" style="width:${Math.min(100,pct)}%"></div></div>
-        </div>
-        <div style="font-size:12px;color:var(--text-dim);">Operadores sob responsabilidade: <span style="color:var(--text)">${totalOps}</span></div>
-        <div style="font-size:12px;color:var(--text-dim);">Média das notas: <span style="color:var(--neon)">${avals.length?fmtScore(media):'—'}</span></div>
-        <div style="font-size:12px;color:var(--text-dim);">Última avaliação: <span style="color:var(--text)">${ultima?fmtDateTime(ultima.timestamp):'—'}</span></div>
-        <div style="margin-top:14px;"><button class="btn btn-sm" style="width:100%" onclick="openMonitorModal('${m.id}')">Editar monitor</button></div>
-      </div>`;
-  }).join('') || `<div class="empty-state"><div class="empty-state-text">Nenhum monitor cadastrado</div></div>`;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   PAINEL DO MONITOR (visão restrita ao próprio escopo)
-════════════════════════════════════════════════════════════════ */
-function renderMinhaEquipe(){
-  const container = document.getElementById('minha-equipe-ops');
-  const kpiEl = document.getElementById('minha-equipe-kpi');
-  const badgeEl = document.getElementById('minha-equipe-setor-badge');
-  if(!container || !DB.user || DB.user.role!=='monitor') return;
-
-  const monitor = getMonitor(DB.user.monitorId);
-  if(!monitor) return;
-
-  badgeEl.textContent = monitor.setores.join(' · ').toUpperCase();
-
-  const meusOps = DB.operadores.filter(o=>monitor.setores.includes(o.setor));
-  const minhasAvals = DB.avaliacoes.filter(a=>a.monitorId===monitor.id);
-  const mediaMinhaEquipe = (()=>{
-    const medias = meusOps.map(o=>mediaOperador(o.id)).filter(m=>m!==null);
-    return medias.length ? medias.reduce((s,m)=>s+m,0)/medias.length : 0;
-  })();
-  const abaixoMedia = meusOps.filter(o=>{ const m=mediaOperador(o.id); return m!==null && m<80; }).length;
-
-  kpiEl.innerHTML = `
-    <div class="kpi-card"><div class="kpi-label">Operadores na Equipe</div><div class="kpi-value">${meusOps.length}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Minhas Avaliações</div><div class="kpi-value">${minhasAvals.length}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Média da Equipe</div><div class="kpi-value">${fmtScore(mediaMinhaEquipe)}</div></div>
-    <div class="kpi-card ${abaixoMedia>0?'perf-alert':''}"><div class="kpi-label">Abaixo da Média</div><div class="kpi-value ${abaixoMedia>0?'red':''}">${abaixoMedia}</div><div class="kpi-sub">operadores em alerta</div></div>
-  `;
-
-  container.innerHTML = meusOps.map(op=>opCardHTML(op)).join('') ||
-    `<div class="empty-state"><div class="empty-state-icon">◉</div><div class="empty-state-text">Nenhum operador no seu escopo ainda</div></div>`;
-}
-/* ════════════════════════════════════════════════════════════════
-   QUADRANTES
-════════════════════════════════════════════════════════════════ */
-function refreshQuadrantes(){
-  if(!document.getElementById('page-quadrantes')) return;
-  const setor = document.getElementById('f-quad-setor').value;
-  const operadorId = document.getElementById('f-quad-operador').value;
-
-  let ops = DB.operadores;
-  if(setor) ops = ops.filter(o=>o.setor===setor);
-  if(operadorId) ops = ops.filter(o=>o.id===operadorId);
-
-  const withMedia = ops.map(o=>({op:o, media:mediaOperador(o.id)})).filter(x=>x.media!==null);
-  const mediaGeralFiltrada = withMedia.length ? withMedia.reduce((s,x)=>s+x.media,0)/withMedia.length : 0;
-  const quadGeral = withMedia.length ? quadranteOf(mediaGeralFiltrada) : null;
-
-  document.getElementById('quad-media-geral').textContent = withMedia.length ? fmtScore(mediaGeralFiltrada) : '—';
-  const mgBadge = document.getElementById('quad-media-badge');
-  mgBadge.textContent = quadGeral ? 'QUADRANTE '+quadGeral : 'QUADRANTE —';
-  mgBadge.className = `badge ${quadGeral?badgeClassFor(quadGeral):'badge-b'}`;
-
-  const buckets = { A:[], B:[], C:[] };
-  withMedia.forEach(x=> buckets[quadranteOf(x.media)].push(x));
-
-  const chipHTML = (x)=>{
-    const emQueda = isOperadorEmQueda(x.op.id);
-    const dotColor = x.media>=90?'#00c850':x.media>=80?'#ffa000':'var(--neon)';
-    return `<div class="op-chip ${emQueda?'perf-alert':''}" onclick="openOpDetail('${x.op.id}')">
-      <span style="width:6px;height:6px;border-radius:50%;background:${dotColor};box-shadow:0 0 6px ${dotColor};"></span>
-      ${escapeHtml(x.op.nome)} <span class="badge ${badgeClassFor(quadranteOf(x.media))}" style="font-size:9px;">${fmtScore(x.media)}</span>
-    </div>`;
-  };
-
-  document.getElementById('quad-a-ops').innerHTML = buckets.A.map(chipHTML).join('') || `<div class="empty-state-text" style="padding:8px;">Nenhum operador neste quadrante</div>`;
-  document.getElementById('quad-b-ops').innerHTML = buckets.B.map(chipHTML).join('') || `<div class="empty-state-text" style="padding:8px;">Nenhum operador neste quadrante</div>`;
-  document.getElementById('quad-c-ops').innerHTML = buckets.C.map(chipHTML).join('') || `<div class="empty-state-text" style="padding:8px;">Nenhum operador neste quadrante</div>`;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   HISTÓRICO
-════════════════════════════════════════════════════════════════ */
-function refreshHistorico(){
-  if(!document.getElementById('page-historico')) return;
-  const f = {
-    operadorId: document.getElementById('f-hist-operador').value,
-    monitorId: document.getElementById('f-hist-monitor').value,
-    carteiraId: document.getElementById('f-hist-carteira').value,
-    inicio: document.getElementById('f-hist-inicio').value,
-    fim: document.getElementById('f-hist-fim').value,
-  };
-
-  let avals = applyFilters(DB.avaliacoes, f);
-  if(DB.user && DB.user.role==='monitor') avals = avals.filter(a=>a.monitorId===DB.user.monitorId);
-
-  avals = avals.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)).slice(0,200);
-
-  document.getElementById('historico-tbody').innerHTML = avals.map(a=>{
-    const op = getOperador(a.operadorId);
-    const mon = getMonitor(a.monitorId);
-    const cart = getCarteira(a.carteiraId);
-    const quad = quadranteOf(a.nota);
-    return `
-      <tr>
-        <td><span style="font-family:var(--font-mono);font-size:11px;">${fmtDateTime(a.timestamp)}</span></td>
-        <td>${op?escapeHtml(op.nome):'—'}</td>
-        <td>${mon?escapeHtml(mon.nome):'—'}</td>
-        <td>${cart?escapeHtml(cart.nome):'—'}</td>
-        <td><span class="badge ${badgeClassFor(quad)}">${fmtScore(a.nota)}</span></td>
-        <td>${a.ngc>0?`<span class="badge badge-ngc">${a.ngc} NGC</span>`:'—'}</td>
-        <td><span class="badge ${badgeClassFor(quad)}">${quad}</span></td>
-        <td><button class="btn btn-sm" onclick="verAvaliacao('${a.id}')">Ver</button></td>
-      </tr>`;
-  }).join('') || `<tr><td colspan="8" class="data-table-empty">Nenhuma avaliação encontrada no filtro</td></tr>`;
-}
-
-function verAvaliacao(id){
-  const a = DB.avaliacoes.find(x=>x.id===id);
-  if(!a) return;
-  const op = getOperador(a.operadorId);
-  const mon = getMonitor(a.monitorId);
-  const cart = getCarteira(a.carteiraId);
-  const quad = quadranteOf(a.nota);
-  document.getElementById('ver-avaliacao-content').innerHTML = `
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-      <div class="score-circle ${scoreClassFor(quad)}" style="width:56px;height:56px;">${Math.round(a.nota)}</div>
-      <div>
-        <div style="color:var(--text);font-weight:500;">${escapeHtml(op?op.nome:'—')}</div>
-        <div style="font-size:11px;color:var(--text-dim);">${fmtDateTime(a.timestamp)}</div>
-      </div>
-    </div>
-    <div><strong style="color:var(--text-dim);font-size:11px;">MONITOR:</strong> ${escapeHtml(mon?mon.nome:'—')}</div>
-    <div><strong style="color:var(--text-dim);font-size:11px;">CARTEIRA:</strong> ${escapeHtml(cart?cart.nome:'—')}</div>
-    <div><strong style="color:var(--text-dim);font-size:11px;">SETOR:</strong> ${escapeHtml(a.setor)}</div>
-    <div><strong style="color:var(--text-dim);font-size:11px;">TELEFONE:</strong> ${escapeHtml(a.telefone||'—')}</div>
-    <div><strong style="color:var(--text-dim);font-size:11px;">NGC:</strong> ${a.ngc>0?'<span class="badge badge-ngc">SIM</span>':'Não'}</div>
-    <div class="sep"></div>
-    <div><strong style="color:var(--text-dim);font-size:11px;">PONTOS CRÍTICOS:</strong><br>${escapeHtml(a.pontosCriticos||'—')}</div>
-    <div style="margin-top:8px;"><strong style="color:var(--text-dim);font-size:11px;">PONTOS POSITIVOS:</strong><br>${escapeHtml(a.pontosPositivos||'—')}</div>
-  `;
-  openModal('modal-ver-avaliacao');
-}
-/* ════════════════════════════════════════════════════════════════
-   EXPORTAR CSV
-════════════════════════════════════════════════════════════════ */
-function exportCSV(){
-  const setor = document.getElementById('exp-setor').value;
-  const carteiraId = document.getElementById('exp-carteira').value;
-  const inicio = document.getElementById('exp-inicio').value;
-  const fim = document.getElementById('exp-fim').value;
-  const tipo = document.getElementById('exp-tipo').value;
-
-  let avals = applyFilters(DB.avaliacoes, { setor, carteiraId, inicio, fim });
-
-  if(!avals.length){ toast('⚠ Nenhuma avaliação encontrada para os filtros informados'); return; }
-
-  let headers, rows;
-
-  if(tipo==='detalhado'){
-    headers = ['data','telefone','setor','carteira','operador','monitor','nota','ngc','pontos_criticos','pontos_positivos'];
-    rows = avals.map(a=>[
-      a.data, a.telefone||'', a.setor,
-      getCarteira(a.carteiraId)?.nome||'', getOperador(a.operadorId)?.nome||'', getMonitor(a.monitorId)?.nome||'',
-      a.nota, a.ngc, a.pontosCriticos||'', a.pontosPositivos||''
-    ]);
-  } else if(tipo==='operador'){
-    const grouped = {};
-    avals.forEach(a=>{ (grouped[a.operadorId]=grouped[a.operadorId]||[]).push(a); });
-    headers = ['operador','setor','avaliacoes','media','ngc_total'];
-    rows = Object.entries(grouped).map(([opId,list])=>{
-      const op = getOperador(opId);
-      const media = list.reduce((s,a)=>s+a.nota,0)/list.length;
-      return [op?op.nome:'—', op?op.setor:'—', list.length, fmtScore(media), list.reduce((s,a)=>s+a.ngc,0)];
-    });
-  } else if(tipo==='monitor'){
-    const grouped = {};
-    avals.forEach(a=>{ (grouped[a.monitorId]=grouped[a.monitorId]||[]).push(a); });
-    headers = ['monitor','avaliacoes','media','ngc_total'];
-    rows = Object.entries(grouped).map(([monId,list])=>{
-      const mon = getMonitor(monId);
-      const media = list.reduce((s,a)=>s+a.nota,0)/list.length;
-      return [mon?mon.nome:'—', list.length, fmtScore(media), list.reduce((s,a)=>s+a.ngc,0)];
-    });
-  } else { // ngc
-    const ngcAvals = avals.filter(a=>a.ngc>0);
-    if(!ngcAvals.length){ toast('⚠ Nenhuma não conformidade grave encontrada no filtro'); return; }
-    headers = ['data','operador','monitor','carteira','nota'];
-    rows = ngcAvals.map(a=>[a.data, getOperador(a.operadorId)?.nome||'', getMonitor(a.monitorId)?.nome||'', getCarteira(a.carteiraId)?.nome||'', a.nota]);
-  }
-
-  const csvEscape = (v)=>{
-    const s = String(v ?? '');
-    return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
-  };
-  const csv = [headers, ...rows].map(r=>r.map(csvEscape).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `nexus_qa_${tipo}_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  toast(`Relatório exportado — ${rows.length} linha(s)`);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   IMPORTAR CSV (parser real, formato: data,operador,monitor,carteira,setor,nota,ngc)
-════════════════════════════════════════════════════════════════ */
-function parseCSVLine(line){
-  // parser simples com suporte a aspas
-  const result = [];
-  let cur = '', inQuotes = false;
-  for(let i=0;i<line.length;i++){
-    const ch = line[i];
-    if(inQuotes){
-      if(ch === '"'){
-        if(line[i+1] === '"'){ cur+='"'; i++; } else inQuotes=false;
-      } else cur+=ch;
-    } else {
-      if(ch === '"') inQuotes=true;
-      else if(ch === ','){ result.push(cur); cur=''; }
-      else cur+=ch;
-    }
-  }
-  result.push(cur);
-  return result.map(s=>s.trim());
-}
-
-function findOrCreateByName(list, name, makeNew){
-  let item = list.find(x => x.nome.toLowerCase() === name.toLowerCase());
-  if(!item && makeNew){
-    item = makeNew();
-    list.push(item);
-  }
-  return item;
-}
-
-function handleCSVUpload(input){
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (e)=>{
-    try{
-      importCSVText(e.target.result);
-    }catch(err){
-      console.error(err);
-      toast('⚠ Erro ao processar o CSV: '+err.message);
-    }
-  };
-  reader.onerror = ()=> toast('⚠ Falha ao ler o arquivo');
-  reader.readAsText(file, 'UTF-8');
-}
-
-function importCSVText(text){
-  const lines = text.split(/\r?\n/).filter(l=>l.trim().length);
-  if(lines.length<2){ toast('⚠ CSV vazio ou sem dados'); return; }
-
-  const header = parseCSVLine(lines[0]).map(h=>h.toLowerCase());
-  const required = ['data','operador','monitor','carteira','setor','nota'];
-  const missing = required.filter(r=>!header.includes(r));
-  if(missing.length){
-    toast('⚠ Colunas faltando no CSV: '+missing.join(', '));
-    return;
-  }
-
-  const idx = {};
-  header.forEach((h,i)=> idx[h]=i );
-
-  let imported = 0, skipped = 0;
-
-  for(let i=1;i<lines.length;i++){
-    const cols = parseCSVLine(lines[i]);
-    if(cols.length < required.length) { skipped++; continue; }
-
-    const setorNome = cols[idx.setor];
-    const carteiraNome = cols[idx.carteira];
-    const operadorNome = cols[idx.operador];
-    const monitorNome = cols[idx.monitor];
-    const notaRaw = parseFloat(cols[idx.nota]);
-    const ngcRaw = idx.ngc!==undefined ? parseInt(cols[idx.ngc])||0 : 0;
-    const dataRaw = cols[idx.data];
-
-    if(!setorNome || !carteiraNome || !operadorNome || !monitorNome || isNaN(notaRaw)){ skipped++; continue; }
-
-    if(!DB.setores.includes(setorNome)) DB.setores.push(setorNome);
-
-    const carteira = findOrCreateByName(DB.carteiras, carteiraNome, ()=>({ id: uid('cart'), nome: carteiraNome, setor: setorNome }));
-    const monitor = findOrCreateByName(DB.monitores, monitorNome, ()=>({ id: uid('mon'), nome: monitorNome, login: monitorNome.toLowerCase().replace(/\s+/g,'.'), senha:'1234', setores:[setorNome], status:'ATIVO' }));
-    const operador = findOrCreateByName(DB.operadores, operadorNome, ()=>({ id: uid('opx'), nome: operadorNome, matricula:'', setor:setorNome, carteiraId:carteira.id, monitorId:monitor.id, admissao:'' }));
-
-    let dataISO = dataRaw;
-    if(/^\d{2}\/\d{2}\/\d{4}$/.test(dataRaw)){
-      const [d,m,y] = dataRaw.split('/');
-      dataISO = `${y}-${m}-${d}`;
-    }
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(dataISO)) dataISO = new Date().toISOString().slice(0,10);
-
-    DB.avaliacoes.unshift({
-      id: uid('av'),
-      data: dataISO,
-      timestamp: new Date(dataISO+'T12:00:00').toISOString(),
-      telefone: '',
-      setor: setorNome,
-      carteiraId: carteira.id,
-      operadorId: operador.id,
-      monitorId: monitor.id,
-      nota: Math.max(0,Math.min(100,Math.round(notaRaw))),
-      ngc: ngcRaw,
-      pontosCriticos: '',
-      pontosPositivos: '',
-    });
-    imported++;
-  }
-
-  commit();
-  populateAllSelects();
-
-  const resultEl = document.getElementById('csv-import-result');
-  resultEl.style.display='block';
-  resultEl.innerHTML = `✓ ${imported} avaliação(ões) importada(s)${skipped?` — ${skipped} linha(s) ignorada(s)`:''}`;
-  toast(`Importação concluída — ${imported} registro(s)`);
-}
-
-/* Drag & drop visual feedback */
-document.addEventListener('DOMContentLoaded', ()=>{
-  const csvDrop = document.getElementById('csv-drop');
-  if(csvDrop){
-    ['dragover','dragenter'].forEach(evt=> csvDrop.addEventListener(evt, e=>{ e.preventDefault(); csvDrop.classList.add('dragover'); }));
-    ['dragleave','drop'].forEach(evt=> csvDrop.addEventListener(evt, ()=> csvDrop.classList.remove('dragover')));
-    csvDrop.addEventListener('drop', e=>{
-      e.preventDefault();
-      const file = e.dataTransfer.files[0];
-      if(file){
-        const reader = new FileReader();
-        reader.onload = (ev)=>{ try{ importCSVText(ev.target.result); }catch(err){ toast('⚠ Erro ao processar o CSV'); } };
-        reader.readAsText(file,'UTF-8');
-      }
     });
   }
-});
-/* ════════════════════════════════════════════════════════════════
-   RENDER ALL — chamado após qualquer commit() para refletir
-   mudanças "em tempo real" na tela atualmente visível
-════════════════════════════════════════════════════════════════ */
-function renderAll(){
-  const appEl = document.getElementById('app');
-  if(!appEl || appEl.style.display === 'none') return; // sem sessão ativa, nada a redesenhar
-  const activePage = document.querySelector('.page.active');
-  if(activePage) renderPage(activePage.id.replace('page-',''));
-  populateAllSelects();
-}
+  bindSpotlight('.block');
+  bindSpotlight('.criterion-card');
+  bindSpotlight('.ncg-card');
 
-/* ════════════════════════════════════════════════════════════════
-   CHART.JS LOADER
-════════════════════════════════════════════════════════════════ */
-const _chartScript = document.createElement('script');
-_chartScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
-_chartScript.onload = ()=>{
-  // Se o app já estiver visível (ex: após login rápido), redesenha gráficos
-  if(document.getElementById('app').style.display !== 'none'){
-    renderAll();
-  }
-};
-document.head.appendChild(_chartScript);
+  // Subtle 3D tilt for overview blocks
+  document.querySelectorAll('.block.tilt').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      const rotX = (-py * 6).toFixed(2);
+      const rotY = (px * 6).toFixed(2);
+      el.style.transform = `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(4px)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+    });
+  });
+
+  // Gentle lift for criterion/ncg cards
+  document.querySelectorAll('.criterion-card, .ncg-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { el.style.transform = 'translateY(-3px)'; });
+    el.addEventListener('mouseleave', () => { el.style.transform = 'translateY(0)'; });
+  });
+
+  // Magnetic nav buttons
+  document.querySelectorAll('.nav button').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width/2) * 0.3;
+      const y = (e.clientY - r.top - r.height/2) * 0.3;
+      btn.style.transform = `translate(${x}px, ${y}px) scale(1.08)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0) scale(1)'; });
+  });
+
 </script>
 </body>
 </html>
